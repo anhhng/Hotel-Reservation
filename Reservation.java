@@ -2,7 +2,6 @@ package projecttester;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class Reservation
@@ -17,13 +16,26 @@ public class Reservation
    private double costPerDay;
    private int numberOfDays;
    
-   public Reservation(GregorianCalendar start, GregorianCalendar end, int accountID, int room, double aCostPerDay)
+   public Reservation(GregorianCalendar start, GregorianCalendar end, int accountID,
+                      int room, double aCostPerDay)
+   {
+      initReservation(start, end, accountID, room, aCostPerDay, nextReservationNumber++);
+   }
+   
+   public Reservation(GregorianCalendar start, GregorianCalendar end, int accountID,
+                      int room, double aCostPerDay, int aReservationNumber)
+   {
+      initReservation(start, end, accountID, room, aCostPerDay, aReservationNumber);
+   }
+   
+   private void initReservation(GregorianCalendar start, GregorianCalendar end, 
+                           int accountID, int room, double aCostPerDay, int aNumber)
    {
       startDate = start;
       endDate = end;
       acctID = accountID;
       roomNumber = room;
-      reservationNumber = nextReservationNumber++;
+      reservationNumber = aNumber;
       costPerDay = aCostPerDay;
       if (startDate.get(Calendar.YEAR) == endDate.get(Calendar.YEAR))
          numberOfDays = endDate.get(Calendar.DAY_OF_YEAR) - startDate.get(Calendar.DAY_OF_YEAR);
@@ -87,12 +99,11 @@ public class Reservation
       return format.format(endDate.getTime());
    }
    
-   public String toString()
-   {
-      String output = "Reservation #" + reservationNumber + "\nRoom #" + 
-              roomNumber + "\tFrom: " + printStartDate() + "\tTo: " + 
-              printEndDate() + "\n\nNights: " + numberOfDays + "\tRate: %.2f"
-              + "\n\nTotal Cost: %.2f", costPerDay, cost;
-      return output;
+   public static void setNextReserverationNumber(int aNumber) {
+       nextReservationNumber = aNumber;
+   }
+   
+   public static int getNextReserverationNumber() {
+       return nextReservationNumber;
    }
 }
