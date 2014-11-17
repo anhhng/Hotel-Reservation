@@ -41,8 +41,9 @@ public class Reservation
          numberOfDays = endDate.get(Calendar.DAY_OF_YEAR) - startDate.get(Calendar.DAY_OF_YEAR);
       else
          numberOfDays = 365 - startDate.get(Calendar.DAY_OF_YEAR) + endDate.get(Calendar.DAY_OF_YEAR);
-      
+      System.out.println("costPerDay: " + costPerDay + "   days: " + (double)numberOfDays);
       cost = costPerDay * (double)(numberOfDays);
+      System.out.println(cost);
    }
    
    public int getNumberOfDays()

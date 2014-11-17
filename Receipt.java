@@ -28,6 +28,6 @@ public class Receipt
    
    public String print()
    {
-      return view.header(guestID, guestName) + view.lineItem(lineItems) + view.footer(totalCost);
+      return String.format("%s\n\n%s\n\n%s", view.header(guestID, guestName), view.lineItem(lineItems), view.footer(totalCost));
    }
 }

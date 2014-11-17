@@ -6,6 +6,7 @@
 
 package projecttester;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import javax.swing.JFrame;
@@ -19,8 +20,18 @@ public class ProjectTester
       GregorianCalendar start = new GregorianCalendar(2014, 10, 12);
       GregorianCalendar end = new GregorianCalendar(2014, 10, 19);
       Reservation r = new Reservation(start, end, 1010, 102, 100.00);
+      Reservation r2 = new Reservation(start, end, 1011, 106, 100.00);
+      Reservation r3 = new Reservation(start, end, 1012, 111, 200.00);
       //JFrame frame = new GuestMenu(ADD, account);
-      JFrame frame = new ReservationConfirmationGUI(r);
+      ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+      reservations.add(r);
+      reservations.add(r2);
+      reservations.add(r3);
+      Receipt receipt = new Receipt(reservations, account.getName(), account.getAcctID());
+      receipt.setView(new ComprehensiveView());
+      //JFrame frame = new ViewCancelGUI(reservations);
+      //JFrame frame = new ReservationConfirmationGUI(r);
+      JFrame frame = new ReceiptGUI(receipt);
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       frame.setVisible(true);
       frame.pack();

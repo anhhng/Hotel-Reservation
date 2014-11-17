@@ -9,6 +9,6 @@ public abstract class BaseView implements ReceiptView
    
    public String footer(double totalCost)
    {
-      return "Total Cost: $%.2f" + totalCost;
+      return String.format("Total Cost: $%.2f", totalCost);
    }
 }
