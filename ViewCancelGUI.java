@@ -64,7 +64,7 @@ public class ViewCancelGUI extends JFrame
       {
          public void actionPerformed(ActionEvent e)
          {
-            
+            System.out.println("Test");
          }
       });
       JButton backButton = new JButton("Go back");
