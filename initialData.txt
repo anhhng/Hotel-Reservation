@@ -1,0 +1,17 @@
+nextReservationNumber	1502
+
+nextID	1006
+
+// accounts
+//		manager	name	password	acct#
+account		true	manager	manager		1000
+account		false	anh	anh		1001
+account		false	david	david		1003
+account		false	daniel	daniel		1004
+account		false	bob	passwd		1005
+
+// reservations
+//                Arrival         Depart      AcctId  Room      Cost   ResNumber
+reservation	12/10/2014	12/13/2014	2	2	100.0	1500
+reservation	11/10/2015	11/12/2015	2	11	200.0	1501
+
