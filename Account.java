@@ -20,9 +20,23 @@ public class Account
      manager = isManager;
   }
   
+  public Account(boolean isManager, String name, String aPassword, int aAcctID)
+  {
+     acctID = aAcctID;
+     acctName = name;
+     password = aPassword;
+     reservations = new ArrayList<>();
+     manager = isManager;
+  }
+  
   public int getReservationNumber(int index)
   {
-     return reservations.get(index);
+     if (index < reservations.size())
+        return reservations.get(index);
+     else {
+         System.out.println("getReservationNumber out of bounds");
+         return 0;
+     }
   }
   
   public void addReservationNumber(int number)
@@ -51,4 +65,22 @@ public class Account
   {
      return manager;
   }
+   
+   public static void setNextID(int aNumber) {
+       nextID = aNumber;
+   }
+   
+   public static int getNextID() {
+       return nextID;
+   }
+   
+   public String getName()
+   {
+       return acctName;
+   }
+   
+   public String getPassword()
+   {
+       return password;
+   }
 }
