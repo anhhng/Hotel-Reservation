@@ -1,3 +1,4 @@
+package projecttester;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -12,15 +13,7 @@ import javax.swing.SwingConstants;
 
 public class CancellationAndConfirmation extends JFrame
 {
-	public static void main(String[] arg)
-	{
-		new CancellationAndConfirmation();
-	}
-	
-	public CancellationAndConfirmation()
-	{
-		CancelAndConfirm();
-	}
+
 	public void CancelAndConfirm()
 	{
 		setSize(50,50);
