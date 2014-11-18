@@ -16,6 +16,7 @@ public class ProjectTester
    public static void main(String[] args)
    {
       Hotel ADD = new Hotel();
+      CreateAccount create = new CreateAccount();
       Account account = new Account(false, "Bob", "password");
       GregorianCalendar start = new GregorianCalendar(2014, 10, 12);
       GregorianCalendar end = new GregorianCalendar(2014, 10, 19);
