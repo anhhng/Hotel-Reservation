@@ -13,7 +13,7 @@ import javax.swing.JFrame;
 
 public class ProjectTester
 {
-   public static void main(String[] args)
+   public static void main(String[] args) throws InterruptedException, Exception
    {
       Hotel ADD = new Hotel();
       CreateAccount create = new CreateAccount();

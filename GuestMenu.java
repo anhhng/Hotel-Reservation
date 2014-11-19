@@ -17,7 +17,7 @@ public class GuestMenu extends JFrame
    private Hotel hotel;
    private Account guest;
    
-   public GuestMenu(Hotel aHotel, Account anAccount)
+   public GuestMenu(final Hotel aHotel, Account anAccount)
    {
       fullName = "Some Person";
       hotel = aHotel;
@@ -41,7 +41,7 @@ public class GuestMenu extends JFrame
       welcomeLabel.setPreferredSize(new Dimension(WIDTH * 5 / 6, SECTION_HEIGHT));
       headPanel.add(welcomeLabel);
       
-      JLabel logoutLabel = new JLabel("Logout");
+      final JLabel logoutLabel = new JLabel("Logout");
       Font font = logoutLabel.getFont();
       Map attributes = font.getAttributes();
       attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);

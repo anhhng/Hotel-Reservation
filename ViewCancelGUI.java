@@ -44,10 +44,10 @@ public class ViewCancelGUI extends JFrame
       JPanel reservationInfo = new JPanel();
       reservationInfo.setLayout(new BoxLayout(reservationInfo, BoxLayout.Y_AXIS));
       //reservationInfo.setPreferredSize(new Dimension(WIDTH, SECTION_HEIGHT));
-      JLabel info = new JLabel("Reservation #" + aReservation.getReservationNumber());
-      JLabel info2 = new JLabel("Room #" + aReservation.getRoomNumber());
-      JLabel info3 = new JLabel("From " + aReservation.printStartDate() + " to " + aReservation.printEndDate());
-      JLabel info4 = new JLabel("Total Cost: $" + String.format("%.2f", aReservation.getCost()));
+      JLabel info = new JLabel("Reservation #" /*+ aReservation.getReservationNumber()*/);
+      JLabel info2 = new JLabel("Room #" /*+ aReservation.getRoomNumber()*/);
+      JLabel info3 = new JLabel("From " /*+ aReservation.printStartDate() + " to " + aReservation.printEndDate()*/);
+      JLabel info4 = new JLabel("Total Cost: $" /*+ String.format("%.2f", aReservation.getCost())*/);
       info.setPreferredSize(new Dimension(WIDTH - BORDER_OFFSET, TEXT_HEIGHT));
       info2.setPreferredSize(new Dimension(WIDTH - BORDER_OFFSET, TEXT_HEIGHT));
       info3.setPreferredSize(new Dimension(WIDTH - BORDER_OFFSET, TEXT_HEIGHT));
