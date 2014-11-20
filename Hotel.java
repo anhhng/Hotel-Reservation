@@ -1,7 +1,7 @@
 package projecttester;
 
+import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,9 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 
 public class Hotel
 {
@@ -34,194 +32,127 @@ public class Hotel
    private ArrayList<Reservation> currentReservations;
    private Account currentAccount;
    private Receipt currentReceipt;
-   enum State {MgrOrGuest,
-               MgrLogin,
-               GuestLogin,
-               logout,
-               guestOptions,
-               createNewAccount,
-               viewReservation,
-               cancelReservation,
-               makeReservation,
-               exit,
-               testing };
-   State currentState;
-   String loginMsg;
+   private final JLabel loginLabel = new JLabel("Login");
+
+   JFrame frame = new JFrame("Hotel Reservation");
+   
+   // Cards layout and cards
+   CardLayout cl = new CardLayout();
+   JPanel panelContainer = new JPanel();
+   JPanel loginCard = new JPanel();
+   JPanel guestLoginCard = new JPanel();
+   JPanel guestOptionCard = new JPanel();
+   JPanel newAccountCard = new JPanel();
+   JPanel managerLoginCard = new JPanel();
    
    public Hotel() throws InterruptedException
    {
       rooms = new ArrayList<Room>();
       reservations = new ArrayList<Reservation>();
       accounts = new ArrayList<Account>();
-      currentReservations = new ArrayList<Reservation>();
-      loginMsg = "Login";
-      
+      currentReservations = new ArrayList<Reservation>();      
       
       for (int i = 0; i < NUM_OF_ROOMS / 2; i++)
          rooms.add(new Room(100 + i, LUXURY));
       for (int i = NUM_OF_ROOMS / 2 + 1; i < NUM_OF_ROOMS; i++)
          rooms.add(new Room(100 + i, ECONOMY));
       
+      // get save account reservation data
       loadInfo();
       
-      // Set Initial State for State Machine
-      currentState = State.MgrOrGuest;
+      panelContainer.setLayout(cl);
       
-      // Uncomment following to use only test state
-      // currentState = State.testing;
+      // setup card
+      loginCard("Login");
+      guestLoginCard();
+      guestOptionsCard();
+      createNewAcctCard();
+      managerLoginCard();
       
-      // ReservationSystem State Machine
-      while ( true )
-      {
-          switch (currentState) {
-              case MgrOrGuest:
-              {
-                  loginGUI(loginMsg);
-                  break;
-              }
-              case MgrLogin:
-              {
-                 loginMsg = "Login - Manager login not done Yet";
-                 currentState = State.MgrOrGuest;
-                 break;
-              }
-              case GuestLogin:
-              {
-                 guestLoginGUI();
-                 break;
-              }
-              case logout:
-              {
-                  saveInfo();
-                  System.exit(0);
-              }
-              case guestOptions:
-              {
-                  guestOptionsGUI();
-                  break;
-              }
-              case createNewAccount:
-              {
-                  createNewAcctGUI();
-                  currentState = State.GuestLogin;
-                  break;
-              }
-              case cancelReservation:
-              {
-                  break;
-              }
-              case makeReservation:
-              {
-                  break;
-              }
-              case exit:
-              {
-                  return;
-              }
-              case testing:
-              {
-                  testCodeGUI();
-                  break;
-              }
-              default:
-              {
-                  System.out.println("Bad State");
-                  loginMsg = "Login";
-                  currentState = State.MgrOrGuest;
-                  break;
-              }
-          }
-      }
+      cl.show(panelContainer, "loginCard");
+      frame.add(panelContainer);
+      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      frame.pack();
+      frame.setVisible(true);
+      
+      // wait for frame to dispose
+       while (frame.isVisible() == true)
+           Thread.sleep(100);
+       
+      // save information to file
+      saveInfo();
    }
    
-   private void loginGUI(String aMessage) throws InterruptedException
+   private void loginCard(String aMessage) throws InterruptedException
    {
-       // create login frame
-       final JFrame loginFrame = new JFrame();
-       loginFrame.setSize(400, 300);
-       loginFrame.setLayout(new BoxLayout(loginFrame.getContentPane(), BoxLayout.Y_AXIS));
-       
        // create login panels
        JPanel labelPanel = new JPanel();
        JPanel loginPanel = new JPanel();
-       JPanel exitPanel = new JPanel();
-       loginPanel.setLayout(new FlowLayout());
+       JPanel quitPanel = new JPanel();
+       loginCard.setLayout(new BoxLayout(loginCard, BoxLayout.Y_AXIS));
        
        // create buttons
        JButton guestButton = new JButton("Guest");
        JButton managerButton = new JButton("Manager");
-       JButton exitButton = new JButton("Quit");
+       JButton quitButton = new JButton("Quit");
        
        // create label
-       JLabel label = new JLabel(aMessage);
-       label.setFont(new Font("Calibri", Font.BOLD, 18));
-       label.setHorizontalAlignment(JLabel.CENTER);
-       label.setVerticalAlignment(JLabel.CENTER);
-       label.setPreferredSize(new Dimension(450,50));
+       loginLabel.setFont(new Font("Calibri", Font.BOLD, 18));
+       loginLabel.setHorizontalAlignment(JLabel.CENTER);
+       loginLabel.setVerticalAlignment(JLabel.CENTER);
+       loginLabel.setPreferredSize(new Dimension(450,50));
        
        // Add buttons to panels
-       labelPanel.add(label);
+       labelPanel.add(loginLabel);
        loginPanel.add(guestButton);
        loginPanel.add(managerButton);
-       exitPanel.add(exitButton);
+       quitPanel.add(quitButton);
        
-       // Add panels to frame
-       loginFrame.add(labelPanel);
-       loginFrame.add(loginPanel);
-       loginFrame.add(exitPanel);
+       // Add panels to login card
+       loginCard.add(labelPanel);
+       loginCard.add(loginPanel);
+       loginCard.add(quitPanel);
+       
+       
+       panelContainer.add(loginCard,"loginCard");
        
        // Button action listeners
        guestButton.addActionListener(new ActionListener()
             {
+              @Override
               public void actionPerformed(ActionEvent e)
               {
-                 loginFrame.dispose();
                  System.out.println("Guest button Pushed!");
-                 currentState = State.GuestLogin;
+                 cl.show(panelContainer, "guestLoginCard");
               }
             });
 
        managerButton.addActionListener(new ActionListener()
             {
+              @Override
               public void actionPerformed(ActionEvent e)
               {
                  System.out.println("Manager button Pushed!");
-                 loginFrame.dispose();
-                 currentState = State.MgrLogin;
-                 loginMsg = "Login - Manager login not done Yet";
-             }
-            });
-
-       exitButton.addActionListener(new ActionListener()
-            {
-              public void actionPerformed(ActionEvent e)
-              {
-                 currentState = State.exit;
-                 System.out.println("Exit button Pushed!");
-                 loginFrame.dispose();
+                 cl.show(panelContainer, "managerLoginCard");
               }
             });
-       
-       // Center frame in middle screen
-       loginFrame.setLocationRelativeTo(null);
-       loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-       
-       // make frame visable
-       loginFrame.setVisible(true);
-       
-       // Wait frame to disposed
-       while (loginFrame.isVisible() == true)
-           Thread.sleep(100);
-       
-       return;
+
+       quitButton.addActionListener(new ActionListener()
+            {
+              @Override
+              public void actionPerformed(ActionEvent e)
+              {
+                 System.out.println("LoginCard - Quit button Pushed!");
+                 saveInfo();
+                 System.exit(0);
+              }
+            });
    }
    
-   private void guestLoginGUI() throws InterruptedException
+   private void guestLoginCard() throws InterruptedException
    {
        // create login frame
-       final JFrame loginFrame = new JFrame();
-       loginFrame.setSize(400, 300);
-       loginFrame.setLayout(new BoxLayout(loginFrame.getContentPane(), BoxLayout.Y_AXIS));
+       guestLoginCard.setLayout(new BoxLayout(guestLoginCard, BoxLayout.Y_AXIS));
        
        // create UserID panel
        JPanel userNamePanel = new JPanel();
@@ -235,36 +166,38 @@ public class Hotel
        
        // create Password panel
        JPanel userPwdPanel = new JPanel();
+       
        // password label
        JLabel pwdLabel = new JLabel("Password:");
        pwdLabel.setFont(new Font("Calibri", Font.BOLD, 18));
        pwdLabel.setHorizontalAlignment(JLabel.CENTER);
        pwdLabel.setVerticalAlignment(JLabel.TOP);
+       
        // password text field
        JTextField userPwdText = new JPasswordField(20);
        userPwdPanel.add(pwdLabel);   // add pwd label
        userPwdPanel.add(userPwdText); // add pwd text field
+       
        // create buttons for panel
        JPanel buttonPanel = new JPanel();
        JButton loginButton = new JButton("Login");
        JButton cancelButton = new JButton("Cancel");
-       JButton createNewUser = new JButton("Create New Account");
+       JButton createNewAccount = new JButton("Create New Account");
        buttonPanel.add(loginButton);
        buttonPanel.add(cancelButton);
-       buttonPanel.add(createNewUser);
+       buttonPanel.add(createNewAccount);
        
-       // Add panels to frame
-       loginFrame.add(userNamePanel);
-       loginFrame.add(userPwdPanel);
-       loginFrame.add(buttonPanel);
+       // Add panels to guestLoginCard
+       guestLoginCard.add(userNamePanel);
+       guestLoginCard.add(userPwdPanel);
+       guestLoginCard.add(buttonPanel);
               
-       // Center frame in middle screen
-       loginFrame.setLocationRelativeTo(null);
-       loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+       panelContainer.add(guestLoginCard,"guestLoginCard");
        
        // Action Listner for login button
        loginButton.addActionListener(new ActionListener()
             {
+              @Override
               public void actionPerformed(ActionEvent e)
               {
                  // Login Button Pushed. Check User/Password
@@ -274,95 +207,71 @@ public class Hotel
                  if (login(userIdText.getText(), userPwdText.getText()) == true)
                  {
                      System.out.println("Login Success");
-                     currentState = State.guestOptions;
+                     loginLabel.setText("Login");
+                     
+                     // Show guest option card
+                     cl.show(panelContainer, "guestOptionCard");
                  } else {
-                     loginMsg = "Login unsuccess";
-                     currentState = State.MgrOrGuest;
+                     System.out.println("Login unsuccess");
+                     userIdText.setText(null);
+                     userPwdText.setText(null);
+                     loginLabel.setText("Login - unsuccess");
+                     cl.show(panelContainer, "loginCard");
                  }
-                 
-                 // Close Frame
-                 loginFrame.dispose();
              }
             });
 
        // Action Listner for cancel button
        cancelButton.addActionListener(new ActionListener()
             {
+              @Override
               public void actionPerformed(ActionEvent e)
               {
                  System.out.println("Cancel button Pushed!");
-                 loginFrame.dispose();  // close frame
-                 currentState = State.MgrOrGuest;
-                 loginMsg = "Login";
+                 loginLabel.setText("Login");
+                 cl.show(panelContainer, "loginCard");
               }
             });
 
        // Action Listner for Create User Account button
-       createNewUser.addActionListener(new ActionListener()
+       createNewAccount.addActionListener(new ActionListener()
             {
+              @Override
               public void actionPerformed(ActionEvent e)
               {
-                 System.out.println("Create New User button Pushed!!");
-                 currentState = State.createNewAccount;
-                 loginMsg = "Login";
-                 loginFrame.dispose();  // close frame
+                 System.out.println("Create New Account button Pushed!!");
+                 loginLabel.setText("Login");
+                 cl.show(panelContainer, "newAccountCard");
               }
             });
-
-       // make frame visable
-       loginFrame.setVisible(true);
-       
-       // Wait frame close
-       while (loginFrame.isVisible() == true)
-           Thread.sleep(100);
-
-       return;
    }
    
-   private void guestOptionsGUI() throws InterruptedException
+   private void guestOptionsCard() throws InterruptedException
    {
-       // do new accout GUI here
-       System.out.println("Need do guest options GUI");
-       
-       
-       // Hi Guys!!! 
-       // Important wait window done end of GUI because state machine mess up
-       // loginFrame.setVisible(true);
-       // while (loginFrame.isVisible() == true)
-       //    Thread.sleep(100);
-       
-       // Next State - exit for now
-       System.out.println("guestOptionGUI do exit");
-       currentState = State.exit;
+       JLabel guestOptionLabel = new JLabel("Guest Option no done yet");
+       guestOptionCard.add(guestOptionLabel);
+       panelContainer.add(guestOptionCard,"guestOptionCard");
    }
    
-   private void createNewAcctGUI() throws InterruptedException
+   private void createNewAcctCard() throws InterruptedException
    {
-       // do new accout GUI here
-       System.out.println("Need do create new account");
-       
-       
-       // Hi Guys!!! 
-       // Important wait window done end of GUI because state machine mess up
-       // loginFrame.setVisible(true);
-       // while (loginFrame.isVisible() == true)
-       //    Thread.sleep(100);
-        
-       // Next State
-       currentState = State.GuestLogin;
-  }
+       JLabel newAccountLabel = new JLabel("create new account no done yet");
+       newAccountCard.add(newAccountLabel);
+       panelContainer.add(newAccountCard,"newAccountCard");
+   }
    
-   private void testCodeGUI() throws InterruptedException
+   private void managerLoginCard() throws InterruptedException
    {
-       System.out.println("Testing code here");
-       currentState = State.exit;
+       JLabel managerLoginLabel = new JLabel("manager login no done yet");
+       managerLoginCard.add(managerLoginLabel);
+       panelContainer.add(managerLoginCard,"managerLoginCard");
    }
    
    public boolean login(String accountName, String aPassword)
    {
-      // look every account for this account
+      // look all account for this account
       for (Account a: accounts) {
-          if (accountName.compareToIgnoreCase(a.getName()) == 0)
+          if (accountName.compareTo(a.getName()) == 0)
           {
               if (aPassword.compareTo(a.getPassword()) == 0)
               {
@@ -375,7 +284,7 @@ public class Hotel
       
       // No find match
       System.out.println("BAD LOGIN: " + accountName + " " + aPassword);
-      loginMsg = "Login - bad password";
+      loginLabel.setText("Login - Bad Login");
       return false;
    }
    
@@ -417,12 +326,14 @@ public class Hotel
             String line;
             BufferedReader br = new BufferedReader(new FileReader("initialData.txt"));
 
+            // read lines from initData file
             while ( (line = br.readLine()) != null) {
                 String [] strings = line.split("[\t ]+");
                 if (strings[0].compareToIgnoreCase("//") == 0)
                     continue;
                 if (strings[0].compareToIgnoreCase("nextReservationNumber") == 0)
                 {
+                    // next reservation number line
                     if (strings.length >= 2)
                     {
                        Reservation.setNextReserverationNumber(Integer.valueOf(strings[1]));
@@ -430,6 +341,7 @@ public class Hotel
                 }
                 if (strings[0].compareToIgnoreCase("nextID") == 0)
                 {
+                    // next account ID number line
                     if (strings.length >= 2)
                     {
                        Account.setNextID(Integer.valueOf(strings[1]));
@@ -437,6 +349,7 @@ public class Hotel
                 }
                 if (strings[0].compareToIgnoreCase("account") == 0)
                 {
+                    // account information line
                     if (strings.length >= 5)
                     {
                         accounts.add(new Account(Boolean.parseBoolean(strings[1]),
@@ -446,6 +359,7 @@ public class Hotel
                 }
                 if (strings[0].compareToIgnoreCase("reservation") == 0)
                 {
+                    // reservation line
                     if (strings.length >= 7)
                     {
                         GregorianCalendar start = new GregorianCalendar();
@@ -474,11 +388,16 @@ public class Hotel
    {
        try {
            PrintWriter write = new PrintWriter("initialData.txt");
+           
+           // save next reservation number
            write.println("nextReservationNumber\t"+Reservation.getNextReserverationNumber());
            write.println("");
+           
+           // save next new account number
            write.println("nextID\t"+Account.getNextID());
            write.println("");
-           write.println("// accounts");
+           
+           // save accounts           write.println("// accounts");
            write.println("//\t\tmanager\tname\tpassword\tacct#");
            for (Account account : accounts) {
                write.print("account\t\t"+(account.isManager()?"true":"false")+"\t");
@@ -490,6 +409,7 @@ public class Hotel
            write.println("//                Arrival         Depart      AcctId  Room      Cost   ResNumber");
            DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
            
+           // save reservations
            for (Reservation reservation : reservations) {
                write.print("reservation\t"+dateFormat.format(reservation.getArrivalDate().getTime())+"\t");
                write.print(dateFormat.format(reservation.getDepartDate().getTime())+"\t");
@@ -497,6 +417,8 @@ public class Hotel
                write.println(reservation.getCostPerDay()+"\t"+reservation.getReservationNumber());
            }
            write.println("");
+           
+           // close file
            write.close();
        } catch (FileNotFoundException ex) {
            System.out.println(ex);
