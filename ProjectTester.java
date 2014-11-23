@@ -33,6 +33,12 @@ public class ProjectTester
       //JFrame frame = new ViewCancelGUI(reservations);
       //JFrame frame = new ReservationConfirmationGUI(r);
       JFrame frame = new ReceiptGUI(receipt);
+      JFrame f = new JFrame("Cal");
+      Container c = f.getContentPane();
+      c.setLayout(new FlowLayout());
+      c.add(new CalendarGUI());
+      // if you wanna see CalendarGUI.
+      // instead 3 lines below, replace frame with f.
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       frame.setVisible(true);
       frame.pack();
