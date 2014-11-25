@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -20,8 +21,10 @@ public class ViewCancelGUI extends JFrame
    private static final int BORDER_OFFSET = 20;
    private ArrayList<Reservation> reservations;
    
-   public ViewCancelGUI()
+   public ViewCancelGUI(ArrayList<Reservation> aReservations)
    {
+      reservations = aReservations;
+      final boolean[] indexes = new boolean[reservations.size()];
       setPreferredSize(new Dimension(WIDTH, HEIGHT));
       
       JPanel topPanel = new JPanel();
@@ -37,25 +40,33 @@ public class ViewCancelGUI extends JFrame
       headPanel.setPreferredSize(new Dimension(WIDTH, SECTION_HEIGHT));
       topPanel.add(headPanel);
       
-      JLabel headLabel = new JLabel("Confirm Reservation?");
+      JLabel headLabel = new JLabel("Select reservations to cancel");
       headLabel.setPreferredSize(new Dimension(WIDTH - BORDER_OFFSET, SECTION_HEIGHT));
       headPanel.add(headLabel);
       
       JPanel reservationInfo = new JPanel();
       reservationInfo.setLayout(new BoxLayout(reservationInfo, BoxLayout.Y_AXIS));
       //reservationInfo.setPreferredSize(new Dimension(WIDTH, SECTION_HEIGHT));
-      JLabel info = new JLabel("Reservation #" /*+ aReservation.getReservationNumber()*/);
-      JLabel info2 = new JLabel("Room #" /*+ aReservation.getRoomNumber()*/);
-      JLabel info3 = new JLabel("From " /*+ aReservation.printStartDate() + " to " + aReservation.printEndDate()*/);
-      JLabel info4 = new JLabel("Total Cost: $" /*+ String.format("%.2f", aReservation.getCost())*/);
-      info.setPreferredSize(new Dimension(WIDTH - BORDER_OFFSET, TEXT_HEIGHT));
-      info2.setPreferredSize(new Dimension(WIDTH - BORDER_OFFSET, TEXT_HEIGHT));
-      info3.setPreferredSize(new Dimension(WIDTH - BORDER_OFFSET, TEXT_HEIGHT));
-      info4.setPreferredSize(new Dimension(WIDTH - BORDER_OFFSET, TEXT_HEIGHT));
-      reservationInfo.add(info);
-      reservationInfo.add(info2);
-      reservationInfo.add(info3);
-      reservationInfo.add(info4);
+      JLabel header = new JLabel(String.format(" Reservation  Room      From                 To                 Total Cost"));
+      reservationInfo.add(header);
+      for (int i = 0; i < reservations.size(); i++)
+      {
+         final int index = i;
+         Reservation r = reservations.get(i);
+         JCheckBox line = new JCheckBox();
+         String info = String.format("%d         %d        %s     %s    %.2f", 
+                 r.getReservationNumber(), r.getRoomNumber(), 
+                 r.printStartDate(), r.printEndDate(), r.getCost());
+         line.setText(info);
+         line.addActionListener(new ActionListener()
+                 {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                       indexes[index] = !indexes[index];
+                    }
+                 });
+         reservationInfo.add(line);
+      }
       add(reservationInfo, BorderLayout.CENTER);
       
       JPanel buttonPanel = new JPanel();
@@ -64,7 +75,7 @@ public class ViewCancelGUI extends JFrame
       {
          public void actionPerformed(ActionEvent e)
          {
-            System.out.println("Test");
+            System.out.println("Confirm!!!");
          }
       });
       JButton backButton = new JButton("Go back");
@@ -72,7 +83,7 @@ public class ViewCancelGUI extends JFrame
       {
          public void actionPerformed(ActionEvent e)
          {
-            
+            System.out.println("Back button");
          }
       });
       JButton cancelButton = new JButton("Cancel");
@@ -80,7 +91,7 @@ public class ViewCancelGUI extends JFrame
       {
          public void actionPerformed(ActionEvent e)
          {
-            
+            System.out.println("Cancel");
          }
       });
       buttonPanel.setPreferredSize(new Dimension(WIDTH, SECTION_HEIGHT));
