@@ -16,6 +16,9 @@ public class ProjectTester
    public static void main(String[] args) throws InterruptedException, Exception
    {
       Hotel ADD = new Hotel();
+      HotelView frame = new HotelView(ADD);
+      
+      
       CreateAccount create = new CreateAccount();
       Account account = new Account(false, "Bob", "password");
       GregorianCalendar start = new GregorianCalendar(2014, 10, 12);
@@ -32,13 +35,11 @@ public class ProjectTester
       receipt.setView(new ComprehensiveView());
       //JFrame frame = new ViewCancelGUI(reservations);
       //JFrame frame = new ReservationConfirmationGUI(r);
-      JFrame frame = new ReceiptGUI(receipt);
-      JFrame f = new JFrame("Cal");
-      Container c = f.getContentPane();
-      c.setLayout(new FlowLayout());
-      c.add(new CalendarGUI());
-      // if you wanna see CalendarGUI.
-      // instead 3 lines below, replace frame with f.
+      //JFrame frame = new ReceiptGUI(receipt);
+      
+      /*JFrame frame = new JFrame();
+      frame.add(new CalendarGUI());*/
+              
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       frame.setVisible(true);
       frame.pack();
