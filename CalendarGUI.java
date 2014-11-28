@@ -8,6 +8,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Calendar;
@@ -20,13 +21,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/**
- * Bean to display a month calendar in a JPanel. Only works for the Western
- * calendar.
- * 
- * @author Ian F. Darwin, http://www.darwinsys.com/
- * @version $Id: Cal.java,v 1.5 2004/02/09 03:33:45 ian Exp $
- */
 public class CalendarGUI extends JPanel {
   /** The currently-interesting year (not modulo 1900!) */
   protected int yy;
@@ -46,7 +40,7 @@ public class CalendarGUI extends JPanel {
   /** Today's year */
   protected final int thisYear = calendar.get(Calendar.YEAR);
   protected final int thisDay = calendar.get(Calendar.DATE);
-  
+
 
   /** Today's month */
   protected final int thisMonth = calendar.get(Calendar.MONTH);
@@ -63,29 +57,19 @@ public class CalendarGUI extends JPanel {
   /**
    * Construct a Cal, starting with today.
    */
-  CalendarGUI() 
+  CalendarGUI()
   {
     super();
     setYYMMDD(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH));
     buildGUI();
-    recompute();
+    //recompute();
+    printCalendarMonthYear();
   }
 
-  /**
-   * Construct a Cal, given the leading days and the total days
-   * 
-   * @exception IllegalArgumentException
-   *                If year out of range
-   */
-  CalendarGUI(int year, int month, int today) {
-    super();
-    setYYMMDD(year, month, today);
-    buildGUI();
-    recompute();
-  }
 
-  private void setYYMMDD(int year, int month, int today) {
+  private void setYYMMDD(int year, int month, int today)
+  {
     yy = year;
     mm = month;
     dd = today;
@@ -95,7 +79,8 @@ public class CalendarGUI extends JPanel {
       "July", "August", "September", "October", "November", "December" };
 
   /** Build the GUI. Assumes that setYYMMDD has been called. */
-  private void buildGUI() {
+  private void buildGUI()
+  {
     getAccessibleContext().setAccessibleDescription(
         "Calendar not accessible yet. Sorry!");
     setBorder(BorderFactory.createEtchedBorder());
@@ -107,33 +92,34 @@ public class CalendarGUI extends JPanel {
     for (int i = 0; i < months.length; i++)
       monthChoice.addItem(months[i]);
     monthChoice.setSelectedItem(months[mm]);
-    monthChoice.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent ae) {
+    monthChoice.addActionListener(new ActionListener()
+    {
+      public void actionPerformed(ActionEvent ae)
+      {
         int i = monthChoice.getSelectedIndex();
         if (i >= 0) {
           mm = i;
-          // System.out.println("Month=" + mm);
-          recompute();
+          printCalendarMonthYear() ;
         }
       }
     });
-    monthChoice.getAccessibleContext().setAccessibleName("Months");
-    monthChoice.getAccessibleContext().setAccessibleDescription(
-        "Choose a month of the year");
 
     tp.add(yearChoice = new JComboBox());
     yearChoice.setEditable(true);
     for (int i = yy - 5; i < yy + 5; i++)
       yearChoice.addItem(Integer.toString(i));
     yearChoice.setSelectedItem(Integer.toString(yy));
-    yearChoice.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent ae) {
+    yearChoice.addActionListener(new ActionListener()
+    {
+      public void actionPerformed(ActionEvent ae)
+      {
         int i = yearChoice.getSelectedIndex();
         if (i >= 0) {
           yy = Integer.parseInt(yearChoice.getSelectedItem()
               .toString());
           // System.out.println("Year=" + yy);
-          recompute();
+         // recompute();
+          printCalendarMonthYear();
         }
       }
     });
@@ -144,7 +130,7 @@ public class CalendarGUI extends JPanel {
     labs = new JLabel[6][7]; // first row is days
 
     bp.add(b0 = new JLabel("SUN"));
-    b0.setForeground(Color.white);   
+    b0.setForeground(Color.white);
     JLabel MON = new JLabel("MON");
     MON.setForeground(Color.white);
     JLabel TUE = new JLabel("TUE");
@@ -157,7 +143,7 @@ public class CalendarGUI extends JPanel {
     FRI.setForeground(Color.white);
     JLabel SAT = new JLabel("SAT");
     SAT.setForeground(Color.white);
-    
+
     b0.setBackground(Color.blue);
     b0.setOpaque(true);
     MON.setBackground(Color.blue);
@@ -179,50 +165,17 @@ public class CalendarGUI extends JPanel {
     bp.add(FRI);
     bp.add(SAT);
 
-    MouseListener dateSetter = new MouseListener() {
-      public void actionPerformed(ActionEvent e) {
-        String num = e.getActionCommand();
-        if (!num.equals("")) {
-          // set the current day highlighted
-          setDayActive(Integer.parseInt(num));
-          // When this becomes a Bean, you can
-          // fire some kind of DateChanged event here.
-          // Also, build a similar daySetter for day-of-week btns.
-        }
+    MouseAdapter dateSetter = new MouseAdapter()
+    {
+    	public void MousePressed(MouseEvent e)
+      {
+
+    		// click a day to display reservation
+
       }
-
-	@Override
-	public void mouseClicked(MouseEvent paramMouseEvent) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent paramMouseEvent) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent paramMouseEvent) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent paramMouseEvent) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent paramMouseEvent) {
-		// TODO Auto-generated method stub
-		
-	}
     };
 
-    // Construct all the buttons, and add them.
+    // Construct all the labels, and add them.
     for (int i = 0; i < 6; i++)
       for (int j = 0; j < 7; j++) {
         bp.add(labs[i][j] = new JLabel(""));
@@ -232,73 +185,6 @@ public class CalendarGUI extends JPanel {
     add(BorderLayout.SOUTH, bp);
   }
 
-  public final static int dom[] = { 31, 28, 31, 30, /* jan feb mar apr */
-  31, 30, 31, 31, /* may jun jul aug */
-  30, 31, 30, 31 /* sep oct nov dec */
-  };
-
-  /** Compute which days to put where, in the Cal panel */
-  protected void recompute() {
-    // System.out.println("Cal::recompute: " + yy + ":" + mm + ":" + dd);
-    if (mm < 0 || mm > 11)
-      throw new IllegalArgumentException("Month " + mm
-          + " bad, must be 0-11");
-    clearDayActive();
-    calendar = new GregorianCalendar(yy, mm, dd);
-
-    // Compute how much to leave before the first.
-    // getDay() returns 0 for Sunday, which is just right.
-    leadGap = new GregorianCalendar(yy, mm, 1).get(Calendar.DAY_OF_WEEK) - 1;
-    // System.out.println("leadGap = " + leadGap);
-
-    int daysInMonth = dom[mm];
-    if (isLeap(calendar.get(Calendar.YEAR)) && mm == 1)
-//    if (isLeap(calendar.get(Calendar.YEAR)) && mm > 1)
-      ++daysInMonth;
-
-    // Blank out the labels before 1st day of month
-    for (int i = 0; i < leadGap; i++) {
-      labs[0][i].setText("");
-    }
-
-    // Fill in numbers for the day of month.
-    for (int i = 1; i <= daysInMonth; i++) {
-      JLabel b = labs[(leadGap + i - 1) / 7][(leadGap + i - 1) % 7];
-      if(thisYear == yy && mm == thisMonth && i == dd)
-      {
-    	  b.setText(Integer.toString(i));
-    	  b.setBackground(Color.blue);
-    	  b.setOpaque(true);
-      }
-      else
-      b.setText(Integer.toString(i));
-    }
-
-    // 7 days/week * up to 6 rows
-    for (int i = leadGap + 1 + daysInMonth; i < 6 * 7; i++) {
-      labs[(i) / 7][(i) % 7].setText("");
-    }		
-		
-    // Shade current day, only if current month
-    if (thisYear == yy && mm == thisMonth)
-      setDayActive(dd); // shade the box for today
-
-    // Say we need to be drawn on the screen
-    repaint();
-  }
-
-  /**
-   * isLeap() returns true if the given year is a Leap Year.
-   * 
-   * "a year is a leap year if it is divisible by 4 but not by 100, except
-   * that years divisible by 400 *are* leap years." -- Kernighan & Ritchie,
-   * _The C Programming Language_, p 37.
-   */
-  public boolean isLeap(int year) {
-    if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0)
-      return true;
-    return false;
-  }
 
   /** Set the year, month, and day */
   public void setDate(int yy, int mm, int dd) {
@@ -306,40 +192,106 @@ public class CalendarGUI extends JPanel {
     this.yy = yy;
     this.mm = mm; // starts at 0, like Date
     this.dd = dd;
-    recompute();
-  }
-
-  /** Unset any previously highlighted day */
-  private void clearDayActive() {
-    JLabel b;
-
-    // First un-shade the previously-selected square, if any
-    if (activeDay > 0) {
-      b = labs[(leadGap + activeDay - 1) / 7][(leadGap + activeDay - 1) % 7];
-      b.setBackground(b0.getBackground());
-      b.repaint();
-      activeDay = -1;
-    }
+    printCalendarMonthYear();
   }
 
   private int activeDay = -1;
-
-  /** Set just the day, on the current month */
-  public void setDayActive(int newDay)
+  public boolean isLeap(int year)
   {
+	    if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0)
+	      return true;
+	    return false;
+	  }
+  public void printCalendarMonthYear()
+	{
+	  int dom[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	  clearDayActive();
+	  int currentMonth = mm;
+	  int currentYear = yy;
+		// create a new GregorianCalendar object
+		Calendar cal = new GregorianCalendar();
 
-    clearDayActive();
+		// set its date to the first day of the month/year given by user
+		cal.clear();
+		cal.set(currentYear, currentMonth - 1, 1);
+		leadGap = new GregorianCalendar(yy, mm, 1).get(Calendar.DAY_OF_WEEK) - 1;
+		// get the weekday of the first week
+		int firstWeekdayOfMonth = new GregorianCalendar(yy, mm, 1).get(Calendar.DAY_OF_WEEK) -1;
 
-    // Set the new one
-    if (newDay <= 0)
-      dd = new GregorianCalendar().get(Calendar.DAY_OF_MONTH);
-    else
-      dd = newDay;
-    // Now shade the correct square
-    Component square = labs[(leadGap + newDay - 1) / 7][(leadGap + newDay - 1) % 7];
-    square.setBackground(Color.red);
-    
-    square.repaint();
-    activeDay = newDay;
-  }
+		// get the number of days in month.
+		 int numberOfMonthDays = dom[mm];
+
+		// print calendar month based on the weekday of the first
+		// day of the month and the number of days in month:
+		printCalendar(numberOfMonthDays, firstWeekdayOfMonth);
+	}
+
+
+	/*
+	 * 	prints calendar month based on the weekday of the first
+	 *  day of the month and the number of days in month:
+	 */
+	private void printCalendar(int numberOfMonthDays, int firstWeekdayOfMonth)
+	{
+
+		// skip weekdays before the first day of month
+		for (int day = 1; day < firstWeekdayOfMonth; day++)
+		{
+			labs[0][day].setText("");
+		}
+		// display the days of month
+		for (int day = 1; day <= numberOfMonthDays; day++)
+		{
+			int column = (firstWeekdayOfMonth + day -1)/7;
+			int row = (firstWeekdayOfMonth + day -1 ) % 7;
+			 JLabel b = labs[column][row];
+		        if(thisYear == yy && mm == thisMonth && day == dd)
+		        {
+		      	  b.setText(Integer.toString(day));
+
+		      	  b.setOpaque(true);
+		        }
+		        else
+		        b.setText(Integer.toString(day));
+		}
+		 // 7 days/week * up to 6 rows
+	    for (int i = firstWeekdayOfMonth + numberOfMonthDays; i < 6 * 7; i++)
+	    {
+	      labs[(i) / 7][(i) % 7].setText("");
+	    }
+	    // Now highlight current day
+
+	    if(thisYear == yy && mm == thisMonth)
+		{
+			setDayActive(dd,firstWeekdayOfMonth);
+		}
+	}
+	 public void setDayActive(int newDay, int firstWeekdayOfMonth)
+	  {
+		 clearDayActive();
+
+	    // Set the new one
+	    if (newDay <= 0)
+	      dd = new GregorianCalendar().get(Calendar.DAY_OF_MONTH);
+	    else
+	      dd = newDay;
+	    // Now shade the correct square
+	    Component square = labs[(firstWeekdayOfMonth + newDay - 1) / 7][(firstWeekdayOfMonth + newDay - 1) % 7];
+	    square.setBackground(Color.red);
+	    square.repaint();
+	    activeDay = newDay;
+	  }
+	 /** Unset any previously highlighted day */
+	  private void clearDayActive()
+	  {
+		    JLabel b;
+		    // First un-shade the previously-selected square, if any
+		    if (activeDay > 0)
+		    {
+		      b = labs[(leadGap + dd - 1) / 7][(leadGap + dd - 1) % 7];
+		      b.setOpaque(false);
+
+		    }
+	 }
+
 }
