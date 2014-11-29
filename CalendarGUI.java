@@ -3,23 +3,26 @@ package projecttester;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SpinnerListModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class CalendarGUI extends JPanel {
   /** The currently-interesting year (not modulo 1900!) */
@@ -50,10 +53,10 @@ public class CalendarGUI extends JPanel {
 
   /** The month choice */
   private JComboBox monthChoice;
-
+  
   /** The year choice */
-  private JComboBox yearChoice;
-
+  //private JComboBox yearChoice;
+  private JSpinner yearChoice;
   /**
    * Construct a Cal, starting with today.
    */
@@ -77,6 +80,9 @@ public class CalendarGUI extends JPanel {
 
   String[] months = { "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December" };
+  String[] years = {"2005", "2006", "2007", "2008", "2009", "2010", "2014", "2015", "2016", "2018"};
+     
+
 
   /** Build the GUI. Assumes that setYYMMDD has been called. */
   private void buildGUI()
@@ -103,26 +109,34 @@ public class CalendarGUI extends JPanel {
         }
       }
     });
-
-    tp.add(yearChoice = new JComboBox());
-    yearChoice.setEditable(true);
-    for (int i = yy - 5; i < yy + 5; i++)
-      yearChoice.addItem(Integer.toString(i));
-    yearChoice.setSelectedItem(Integer.toString(yy));
-    yearChoice.addActionListener(new ActionListener()
+    
+    
+    SpinnerDateModel model = new SpinnerDateModel(new Date(), null, null,
+            Calendar.DAY_OF_YEAR);
+   final JSpinner spinner = new JSpinner(model);
+    //yearChoice.setEditable(true);
+    tp.add(spinner);
+    String format = "yyyy";
+    JSpinner.DateEditor editor = new JSpinner.DateEditor(spinner, format);
+    // edit spinner to display Year only.
+    spinner.setEditor(editor);  
+    model.addChangeListener(new ChangeListener() 
     {
-      public void actionPerformed(ActionEvent ae)
-      {
-        int i = yearChoice.getSelectedIndex();
-        if (i >= 0) {
-          yy = Integer.parseInt(yearChoice.getSelectedItem()
-              .toString());
-          // System.out.println("Year=" + yy);
-         // recompute();
-          printCalendarMonthYear();
+       public void stateChanged(ChangeEvent e)
+       {
+    	   //Date from spinner
+            Date date = ((SpinnerDateModel)e.getSource()).getDate();
+            Calendar calendar = Calendar.getInstance();
+            //set date we chose to Calendar
+            calendar.setTime(date);
+            int YearIndex = calendar.get(Calendar.YEAR);
+            // set year 
+            yy= YearIndex;
+                     
+            printCalendarMonthYear();
         }
-      }
     });
+ 
     add(BorderLayout.CENTER, tp);
 
     JPanel bp = new JPanel();
@@ -263,7 +277,7 @@ public class CalendarGUI extends JPanel {
 
 	    if(thisYear == yy && mm == thisMonth)
 		{
-			setDayActive(dd,firstWeekdayOfMonth);
+			setDayActive(dd,firstWeekdayOfMonth);		
 		}
 	}
 	 public void setDayActive(int newDay, int firstWeekdayOfMonth)
@@ -278,19 +292,20 @@ public class CalendarGUI extends JPanel {
 	    // Now shade the correct square
 	    Component square = labs[(firstWeekdayOfMonth + newDay - 1) / 7][(firstWeekdayOfMonth + newDay - 1) % 7];
 	    square.setBackground(Color.red);
-	    square.repaint();
+	   
 	    activeDay = newDay;
 	  }
 	 /** Unset any previously highlighted day */
 	  private void clearDayActive()
 	  {
 		    JLabel b;
+		    JLabel translucent = new JLabel("");
 		    // First un-shade the previously-selected square, if any
 		    if (activeDay > 0)
 		    {
 		      b = labs[(leadGap + dd - 1) / 7][(leadGap + dd - 1) % 7];
-		      b.setOpaque(false);
-
+		      // get translucent 
+		      b.setBackground(translucent.getBackground());
 		    }
 	 }
 

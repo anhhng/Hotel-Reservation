@@ -129,7 +129,7 @@ public class HotelView extends JFrame
       userIdLabel.setFont(new Font("Calibri", Font.BOLD, 18));
       userIdLabel.setHorizontalAlignment(JLabel.CENTER);
       userIdLabel.setVerticalAlignment(JLabel.BOTTOM);
-      JTextField userIdText = new JTextField(20);
+      final JTextField userIdText = new JTextField(20);
       userNamePanel.add(userIdLabel); // add user ID label
       userNamePanel.add(userIdText); // add user ID text field
        
@@ -143,7 +143,7 @@ public class HotelView extends JFrame
       pwdLabel.setVerticalAlignment(JLabel.TOP);
        
       // password text field
-      JTextField userPwdText = new JPasswordField(20);
+      final JTextField userPwdText = new JPasswordField(20);
       userPwdPanel.add(pwdLabel);   // add pwd label
       userPwdPanel.add(userPwdText); // add pwd text field
        
@@ -157,7 +157,7 @@ public class HotelView extends JFrame
       buttonPanel.add(createNewAccount);
       
       // message if failed login
-      JLabel messageLabel = new JLabel();
+      final JLabel messageLabel = new JLabel();
        
       // Add panels to guestLoginCard
       guestLoginCard.add(userNamePanel);
