@@ -1,8 +1,9 @@
 package projecttester;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Account
+public class Account implements Serializable
 {
   private static int nextID = 1000;
   private boolean manager;
@@ -37,6 +38,11 @@ public class Account
          System.out.println("getReservationNumber out of bounds");
          return 0;
      }
+  }
+  
+  public ArrayList<Integer> getReservationNumbers()
+  {
+     return reservations;
   }
   
   public void addReservationNumber(int number)

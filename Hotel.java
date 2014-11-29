@@ -4,12 +4,13 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
-public class Hotel
+public class Hotel implements Serializable
 {
    private static final int NUM_OF_ROOMS = 20;
    private static final boolean LUXURY = true;
@@ -37,9 +38,24 @@ public class Hotel
       loadInfo();
    }
    
+   public Account getCurrentAccount()
+   {
+      return currentAccount;
+   }
+   
    public Receipt getCurrentReceipt()
    {
       return currentReceipt;
+   }
+   
+   public ArrayList<Reservation> getReservations()
+   {
+      return reservations;
+   }
+   
+   public ArrayList<Reservation> getCurrentReservations()
+   {
+      return currentReservations;
    }
    
    public boolean login(String accountName, String aPassword)
@@ -49,9 +65,9 @@ public class Hotel
       {
          String name = a.getName().toLowerCase();
          String loginName = accountName.toLowerCase();
-         if (name.compareTo(loginName) == 0)
+         if (name.equals(accountName))
          {
-            if (aPassword.compareTo(a.getPassword()) == 0)
+            if (aPassword.equals(a.getPassword()))
             {
                // find match - set currentAccount
                currentAccount = a;
@@ -69,19 +85,25 @@ public class Hotel
       currentReservations = new ArrayList<Reservation>();
    }
    
-   public void makeReservation()
+   public void makeReservation(GregorianCalendar start, GregorianCalendar end, 
+           int accountID, int room, double aCostPerDay)
    {
-      
+      currentReservations.add(new Reservation(start, end, accountID, room, aCostPerDay));
    }
    
-   public void viewReservation()
+   public void confirmReservations()
    {
-      
+      for (int i = 0; i < currentReservations.size(); i++)
+      {
+         reservations.add(currentReservations.get(i));
+      }
    }
    
-   public void cancelReservation()
+   public void cancelReservation(int reservationNumber)
    {
-      
+      for (int i = 0; i < reservations.size(); i++)
+         if (reservations.get(i).getReservationNumber() == reservationNumber)
+            reservations.remove(i);
    }
    
    public void newUser(boolean isManager, String name, String aPassword)
@@ -91,7 +113,9 @@ public class Hotel
    
    public void createReceipt()
    {
-      
+      if (currentAccount != null)
+         currentReceipt = new Receipt(currentReservations, 
+                 currentAccount.getName(), currentAccount.getAcctID());
    }
    
    private void loadInfo()

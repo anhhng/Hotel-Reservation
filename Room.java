@@ -1,8 +1,9 @@
 package projecttester;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Room
+public class Room implements Serializable
 {
    private static final double LUXURY_COST = 200.00;
    private static final double ECONOMY_COST = 100.00;
