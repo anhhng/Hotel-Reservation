@@ -1,0 +1,4 @@
+Room 201 Bed # 2 Type: Luxary
+Room 202 Bed # 3 Type: Economic	
+Room 204 Bed # 3 Type: Luxary
+Room 206 Bed # 4 Type: Luxary
