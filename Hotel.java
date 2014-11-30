@@ -1,10 +1,15 @@
 package projecttester;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import static java.lang.Integer.parseInt;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -120,6 +125,32 @@ public class Hotel implements Serializable
    
    private void loadInfo()
    {
+      // load accounts and reservations
+      try
+      {
+         ObjectInputStream in = new ObjectInputStream(new FileInputStream("lists.data"));
+         accounts = (ArrayList<Account>) in.readObject();
+         reservations = (ArrayList<Reservation>) in.readObject();
+         in.close();
+      }
+      catch (Exception e)
+      {
+         System.out.println(e);
+      }
+      
+      //load next account and next reservation numbers
+      try
+      {
+         BufferedReader br = new BufferedReader(new FileReader("nexts.data"));
+         Account.setNextID(parseInt(br.readLine()));
+         Reservation.setNextReserverationNumber(parseInt(br.readLine()));
+         br.close();
+      }
+      catch (Exception e)
+      {
+         System.out.println(e);
+      }
+      /*
         try{
             String line;
             BufferedReader br = new BufferedReader(new FileReader("initialData.txt"));
@@ -179,47 +210,75 @@ public class Hotel implements Serializable
             br.close();
         } catch(Exception e) {
             System.out.println(e);
-        }     
+        }  
+      */
    }
    
    public void saveInfo()
    {
-       try {
-           PrintWriter write = new PrintWriter("initialData.txt");
+      // use serialization to save accounts and reservations
+      try
+      {
+         ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("lists.data"));
+         out.writeObject(accounts);
+         out.writeObject(reservations);
+         out.close();
+      }
+      catch (Exception e)
+      {
+         System.out.println(e);
+      }
+      
+      // manually write values for nextAccountId and nextReservationNumber
+      try
+      {
+         PrintWriter write = new PrintWriter("nexts.data");
+         write.println(Account.getNextID());
+         write.println(Reservation.getNextReserverationNumber());
+         write.close();
+      }
+      catch (Exception e)
+      {
+         System.out.println(e);
+      }
+      /*
+      try {
+         PrintWriter write = new PrintWriter("initialData.txt");
            
-           // save next reservation number
-           write.println("nextReservationNumber\t"+Reservation.getNextReserverationNumber());
-           write.println("");
+         // save next reservation number
+         write.println("nextReservationNumber\t"+Reservation.getNextReserverationNumber());
+         write.println("");
            
-           // save next new account number
-           write.println("nextID\t"+Account.getNextID());
-           write.println("");
+         // save next new account number
+         write.println("nextID\t"+Account.getNextID());
+         write.println("");
            
-           // save accounts           write.println("// accounts");
-           write.println("//\t\tmanager\tname\tpassword\tacct#");
-           for (Account account : accounts) {
-               write.print("account\t\t"+(account.isManager()?"true":"false")+"\t");
-               write.print(account.getName()+"\t"+account.getPassword()+"\t\t");
-               write.println(account.getAcctID());
-           }
-           write.println("");
-           write.println("// reservations");
-           write.println("//                Arrival         Depart      AcctId  Room      Cost   ResNumber");
-           DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+         // save accounts           write.println("// accounts");
+         write.println("//\t\tmanager\tname\tpassword\tacct#");
+         for (Account account : accounts) {
+            write.print("account\t\t"+(account.isManager()?"true":"false")+"\t");
+            write.print(account.getName()+"\t"+account.getPassword()+"\t\t");
+            write.println(account.getAcctID());
+         }
+         write.println("");
+         write.println("// reservations");
+         write.println("//                Arrival         Depart      AcctId  Room      Cost   ResNumber");
+         DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
            
-           // save reservations
-           for (Reservation reservation : reservations) {
-               write.print("reservation\t"+dateFormat.format(reservation.getArrivalDate().getTime())+"\t");
-               write.print(dateFormat.format(reservation.getDepartDate().getTime())+"\t");
-               write.print(reservation.getAcctID()+"\t"+reservation.getRoomNumber()+"\t");
-               write.println(reservation.getCostPerDay()+"\t"+reservation.getReservationNumber());
-           }
-           write.println("");
+         // save reservations
+         for (Reservation reservation : reservations) {
+            write.print("reservation\t"+dateFormat.format(reservation.getArrivalDate().getTime())+"\t");
+            write.print(dateFormat.format(reservation.getDepartDate().getTime())+"\t");
+            write.print(reservation.getAcctID()+"\t"+reservation.getRoomNumber()+"\t");
+            write.println(reservation.getCostPerDay()+"\t"+reservation.getReservationNumber());
+         }
+         write.println("");
            
-           // close file
-           write.close();
-       } catch (FileNotFoundException ex) {
-           System.out.println(ex);
-       }
+         // close file
+         write.close();
+      } catch (FileNotFoundException ex) {
+         System.out.println(ex);
+      }
+      */
    }
 }
