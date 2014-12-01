@@ -193,6 +193,7 @@ public class HotelView extends JFrame
                   // Show guest option card
                   panelContainer.add(guestOptionsCard(), "guestOptionsCard");
                   cards.show(panelContainer, "guestOptionsCard");
+                  panelContainer.add(guestLoginCard(), "guestLoginCard");
                } 
                else 
                {
@@ -579,15 +580,24 @@ public class HotelView extends JFrame
             else
             {
                for (int i = 0; i < hotel.getAccounts().size(); i++)
-                  if (userName.getText().equals(hotel.getAccounts().get(i)))
+               {
+                  if (userName.getText().equals(hotel.getAccounts().get(i).getUsername()))
+                  {
                      flag = true;
-            }
-            if (flag)
-               messageLabel.setText("Username already taken");
-            else
-            {
-               hotel.createAccount(false, name.getText(), userName.getText(), password.getText());
-               messageLabel.setText("Account created");
+                  }
+               }
+               if (flag)
+               {
+                  messageLabel.setText("Username already taken");
+               }
+               else
+               {
+                  hotel.createAccount(false, name.getText(), userName.getText(), password.getText());
+                  hotel.login(userName.getText(), password.getText());
+                  panelContainer.add(guestOptionsCard(), "guestOptionsCard");
+                  cards.show(panelContainer, "guestOptionsCard");
+                  panelContainer.add(newAccountCard(), "newAccountCard");
+               }
             }
          }
       });

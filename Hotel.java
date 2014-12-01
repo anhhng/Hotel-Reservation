@@ -73,7 +73,7 @@ public class Hotel implements Serializable
       // look all account for this account
       for (Account a: accounts) 
       {
-         String name = a.getName().toLowerCase();
+         String name = a.getUsername().toLowerCase();
          String loginName = accountName.toLowerCase();
          if (name.equals(accountName))
          {
