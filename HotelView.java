@@ -10,8 +10,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.font.TextAttribute;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.Map;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -22,6 +28,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 import javax.swing.event.MouseInputAdapter;
 
 public class HotelView extends JFrame
@@ -34,6 +41,9 @@ public class HotelView extends JFrame
    CardLayout cards;
    private Hotel hotel;
    private JPanel panelContainer;
+   Date ReservationStartDate;
+   Date ReservationEndDate;
+   boolean luxuryRoom;
            
    public HotelView(Hotel aHotel)
    {
@@ -45,7 +55,7 @@ public class HotelView extends JFrame
       panelContainer.add(loginCard(), "loginCard");
       panelContainer.add(guestLoginCard(), "guestLoginCard");
       panelContainer.add(managerLoginCard(), "managerLoginCard");
-      //panelContainer.add(makeReservationCard(), "makeReservationCard");
+      panelContainer.add(makeReservationCard(this, hotel), "makeReservationCard");
       //panelContainer.add(managerViewCard(), "managerViewCard");
       
       cards.first(panelContainer);
@@ -225,7 +235,476 @@ public class HotelView extends JFrame
          });
       return guestLoginCard;
    }
+
+   class ReservationView extends JPanel
+   {
+        final JTextField checkinDateText; // checkin date text box
+        final JTextField checkoutDateText; // checkout date text box
+        final JButton transactionDoneButton; // transactionDone button
+        final JButton confirmationButton; // confirm button
+        final JButton economyButton; // $100 button
+        final JButton luxuryButton; // $200 button
+        final JLabel messageLabel;  // message label
+        final JTextArea roomsTextArea;
+       
+        ReservationView()
+        {
+            ReservationStartDate = null;
+            ReservationEndDate = null;
+            luxuryRoom = false;
+
+            this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+            // create checkin panel
+            JPanel checkinPanel = new JPanel();
+            JLabel checkInLabel = new JLabel("   Check-In:");
+            checkInLabel.setFont(new Font("Calibri", Font.BOLD, 18));
+            checkInLabel.setHorizontalAlignment(JLabel.CENTER);
+            checkInLabel.setVerticalAlignment(JLabel.BOTTOM);
+            this.checkinDateText = new JTextField(8);
+            checkinPanel.add(checkInLabel); // check-in label
+            checkinPanel.add(this.checkinDateText); // start Date text field
+       
+            // create checkInOut panel
+            JPanel checkInOutPanel = new JPanel();
+
+            // create Check-out label
+            JLabel checkoutLabel = new JLabel("Check-Out:");
+            checkoutLabel.setFont(new Font("Calibri", Font.BOLD, 18));
+            checkoutLabel.setHorizontalAlignment(JLabel.CENTER);
+            checkoutLabel.setVerticalAlignment(JLabel.TOP);
+
+            // Check-out text field
+            checkoutDateText = new JTextField(8);
+            checkInOutPanel.add(checkoutLabel);   // checkout label
+            checkInOutPanel.add(checkoutDateText); // checkout text field
+
+            // create roomType buttons for panel
+            JPanel buttonPanel = new JPanel();
+            economyButton = new JButton("$100");
+            luxuryButton = new JButton("$200");
+            buttonPanel.add(new JLabel("Room Type:"));
+            buttonPanel.add(luxuryButton);
+            buttonPanel.add(economyButton);
+            
+            // transaction panel
+            JPanel transactionPanel = new JPanel();
+            transactionPanel.setMinimumSize(new Dimension(400,30));
+            transactionDoneButton = new JButton("Transaction Done");
+            confirmationButton = new JButton("Confirm");
+            transactionPanel.add(transactionDoneButton);
+
+            roomsTextArea = new JTextArea(5, 10);
+            Border border = BorderFactory.createLineBorder(Color.GRAY);
+            roomsTextArea.setBorder(border);
+            
+            // message label
+            messageLabel = new JLabel("          ");
+            messageLabel.setMinimumSize(new Dimension(400,25));
+            messageLabel.setHorizontalAlignment(JLabel.LEFT);
+
+            // reservationPanel
+            JPanel reservationPanel = new JPanel();
+            reservationPanel.setLayout(new BoxLayout(reservationPanel, BoxLayout.Y_AXIS));
+            reservationPanel.add(checkinPanel);
+            reservationPanel.add(checkInOutPanel);
+            reservationPanel.add(buttonPanel);
+            
+            // confirmation panel
+            JPanel confirmationPanel = new JPanel();
+            confirmationPanel.setLayout(new BoxLayout(confirmationPanel, BoxLayout.X_AXIS));
+            confirmationPanel.add(confirmationButton);
+            confirmationPanel.add(transactionDoneButton);
+            
+            // room available panel
+            JPanel roomsPanel = new JPanel();
+            roomsPanel.setLayout(new BoxLayout(roomsPanel, BoxLayout.Y_AXIS));
+            roomsPanel.add(new JLabel("Available Rooms"));
+            roomsPanel.add(roomsTextArea);
+            
+            // container panel
+            JPanel containerPanel = new JPanel();
+            JPanel space1 = new JPanel();
+            containerPanel.setLayout(new BoxLayout(containerPanel, BoxLayout.X_AXIS));
+            containerPanel.add(reservationPanel);
+            containerPanel.add(roomsPanel);
+            containerPanel.add(space1);
+            
+            // Top space panel
+            JPanel topPanel = new JPanel();
+            this.add(topPanel);
+            this.add(containerPanel);
+            JPanel middlePanel = new JPanel();
+            this.add(middlePanel);
+            this.add(confirmationPanel);
+            this.add(messageLabel);
+        }
+        
+        void addCheckinDateListener(ActionListener aListener)
+        {
+            this.checkinDateText.addActionListener(aListener);
+        }
+        
+        void addCheckoutDateListener(ActionListener aListener)
+        {
+            this.checkoutDateText.addActionListener(aListener);
+        }
+        
+        void addLuxuryButtonListener(ActionListener aListener)
+        {
+            this.luxuryButton.addActionListener(aListener);
+        }
+        
+        void addEcomonyButtonListener(ActionListener aListener)
+        {
+            this.economyButton.addActionListener(aListener);
+        }
+        
+        void addTransactionDoneListener(ActionListener aListener)
+        {
+            this.transactionDoneButton.addActionListener(aListener);
+        }
+        
+        void addConfirmationListener(ActionListener aListener)
+        {
+            this.confirmationButton.addActionListener(aListener);
+        }
+        
+        String getCheckinDate()
+        {
+            return this.checkinDateText.getText();
+        }
+        
+        void setCheckinDate(String aString)
+        {
+            this.checkinDateText.setText(aString);
+        }
+        
+        String getCheckoutDate()
+        {
+            return this.checkoutDateText.getText();
+        }
+        
+        void setCheckoutDate(String aString)
+        {
+            this.checkoutDateText.setText(aString);
+        }
+        
+        void setMessageText(String aString)
+        {
+            this.messageLabel.setText(aString);
+        }
+        
+        void appendTextArea(String aString)
+        {
+            this.roomsTextArea.append(aString);
+        }
+        
+        void clearTextArea()
+        {
+            this.roomsTextArea.setText(null);
+        }
+    }
    
+    class ReservationModel
+    {
+        ReservationController controller;
+        String checkinDate;
+        String checkoutDate;
+        boolean luxury;
+        boolean NoConfirmation;
+        Hotel hotel;
+        Room reserveRoom;  // room this reserve
+        
+        ReservationModel(HotelView aHotelView, Hotel aHotel)
+        {
+            hotel = aHotel;
+            this.checkinDate = "00/00/0000";
+            this.checkoutDate = "00/00/0000";
+            this.NoConfirmation = false;
+        }
+        
+        void setController(ReservationController aController)
+        {
+            controller = aController;
+        }
+        
+        void setCheckinDate(String aText)
+        {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+            try {
+                ReservationStartDate = simpleDateFormat.parse(aText);
+            } 
+            catch (ParseException ex)
+            {
+                controller.setMessage("Bad Checkin Date");
+                controller.setCheckinDate("");
+                ReservationStartDate = null;
+            }
+            checkinDate = aText;
+            
+            confirmation(true);
+        }
+        
+        void setCheckoutDate(String aText)
+        {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+            try {
+                ReservationEndDate = simpleDateFormat.parse(aText);
+            } 
+            catch (ParseException ex)
+            {
+                controller.setMessage("Bad Checkout Date");
+                controller.setCheckoutDate("");
+                ReservationEndDate = null;
+            }
+            checkoutDate = aText;
+            confirmation(true);
+        }
+        
+        void setTransActionDone()
+        {
+System.out.println("FIX! what card receipt");
+            cards.show(panelContainer, "guestOptionsCard");
+        }
+        
+        void luxury(boolean aValue)
+        {
+            luxury = aValue;
+            confirmation(true);
+        }
+        
+        void confirmation(boolean aOnlyUpdate)
+        {
+            if (NoConfirmation == true)
+                return;
+            else
+                NoConfirmation = true;
+                        
+            setCheckinDate(controller.getCheckinDate());
+            setCheckoutDate(controller.getCheckoutDate());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+            if (ReservationStartDate == null)
+            {
+                controller.setMessage("No Checkin Date");
+                NoConfirmation = false;
+                return;
+            }
+            else if (ReservationEndDate == null)
+            {
+                controller.setMessage("No Checkout Date");
+                NoConfirmation = false;
+                return;
+            }
+
+            // Check Reservation Start Date
+            controller.setCheckinDate(simpleDateFormat.format(ReservationStartDate));
+
+            // Check before today
+            Date todayDate = new Date();
+            if (ReservationStartDate.getTime() + 86400000 < todayDate.getTime())
+            {
+                controller.setMessage("Start Date before today");
+                controller.setCheckinDate("");
+                ReservationStartDate = null;
+                NoConfirmation = false;
+                return;
+            }
+            else
+            {
+                 controller.setMessage("                      ");
+            }
+
+            // Check Reservation End Date
+            controller.setCheckoutDate(simpleDateFormat.format(ReservationEndDate));
+
+            // Check before today
+            if (ReservationEndDate.compareTo(new Date()) < 0)
+            {
+                controller.setMessage("End Date before today");
+                controller.setCheckoutDate("");
+                ReservationEndDate = null;
+                NoConfirmation = false;
+                return;
+            }
+            else
+            {
+                controller.setMessage("                    ");
+            }
+
+            if (ReservationStartDate == null)
+            {
+                controller.setMessage("Start Date not set");
+            }
+            else if (ReservationEndDate == null)
+            {
+                controller.setMessage("End Date not set");
+            }
+            else if (ReservationStartDate.getTime() >= ReservationEndDate.getTime())
+            {
+                controller.setMessage("End Date before Start Date");
+                controller.setCheckinDate("");
+                controller.setCheckoutDate("");
+            }
+            else if ((ReservationStartDate.getTime() + 5184000000L) < ReservationEndDate.getTime())
+            {
+                controller.setMessage("Reservation to long");
+                controller.setCheckoutDate("");
+            }
+            
+            // clear roomTextArea
+            controller.clearTextArea();
+            
+            Iterator<Room> roomItr = hotel.getRoomItr();
+            reserveRoom = null;
+            while (roomItr.hasNext())
+            {
+                boolean available = true;
+                Room room = roomItr.next();
+                if (room.isLuxury() == luxury) {
+                    Iterator<Integer> reservationItr = room.getReservationItr();
+                    while ( reservationItr.hasNext())
+                    {
+                        Integer reservationNumber = reservationItr.next();
+                        Reservation reservation = hotel.getReservation(reservationNumber);
+                        Date startDate = reservation.getArrivalDate().getTime();
+                        Date endDate = reservation.getDepartDate().getTime();
+                        if ((ReservationStartDate.getTime() >= startDate.getTime() &&
+                             ReservationStartDate.getTime() < endDate.getTime()) || 
+                            (ReservationEndDate.getTime() > startDate.getTime() &&
+                             ReservationEndDate.getTime() <= endDate.getTime()))
+                        {
+                            // Reservation for this room not available
+                            available = false;
+                            break;
+                        }
+                    }
+                    if (available == true)
+                    {
+                        reserveRoom = room;
+                        controller.appendTextArea(String.valueOf(room.getRoomNumber()));
+                        controller.appendTextArea("\n");
+                    }
+                }
+            }
+            
+            NoConfirmation = false;
+            if (aOnlyUpdate)
+                return;
+            
+            // add reservation
+            GregorianCalendar rStart = new GregorianCalendar();
+            GregorianCalendar rEnd = new GregorianCalendar();
+            rStart.setTime(ReservationStartDate);
+            rEnd.setTime(ReservationEndDate);
+            Reservation reservation = new Reservation(rStart, rEnd, hotel.getCurrentAccount().getAcctID(),
+                      reserveRoom.getRoomNumber(), reserveRoom.getCostPerDay());
+            hotel.addReservation(reservation);
+            
+            // add reservation to account
+            hotel.getCurrentAccount().addReservationNumber(reservation.getReservationNumber());
+            
+            
+            controller.setMessage("Next Reservation or Transaction Done");
+        }
+    }
+       
+    class ReservationController
+    {
+       ReservationModel model;
+       ReservationView view;
+       
+       ReservationController(ReservationModel aModel, ReservationView aView)
+       {
+           this.model = aModel;
+           this.view = aView;
+           
+           aModel.setController(this);
+           
+           this.view.addCheckinDateListener(new ActionListener () {
+                public void actionPerformed(ActionEvent e) {
+                    String text = view.getCheckinDate();
+                    model.setCheckinDate(text);
+                }}
+           );
+           
+           this.view.addCheckoutDateListener(new ActionListener () {
+                public void actionPerformed(ActionEvent e) {
+                    String text = view.getCheckoutDate();
+                    model.setCheckoutDate(text);
+                }}
+           );
+           
+           this.view.addTransactionDoneListener(new ActionListener () {
+                public void actionPerformed(ActionEvent e) {
+                    model.setTransActionDone();
+                }}
+           );
+           
+           this.view.addLuxuryButtonListener(new ActionListener () {
+                public void actionPerformed(ActionEvent e) {
+                    model.luxury(true);
+                }}
+           );
+           
+           this.view.addEcomonyButtonListener(new ActionListener () {
+                public void actionPerformed(ActionEvent e) {
+                    model.luxury(false);
+                }}
+           );
+           
+           this.view.addConfirmationListener(new ActionListener () {
+                public void actionPerformed(ActionEvent e) {
+                    model.confirmation(false);
+                }}
+           );
+       }
+       
+       void setMessage(String aMessage)
+       {
+           view.setMessageText(aMessage);
+       }
+       
+       void setCheckinDate(String aDate)
+       {
+           view.setCheckinDate(aDate);
+       }
+       
+       void setCheckoutDate(String aDate)
+       {
+           view.setCheckoutDate(aDate);
+       }
+       
+       String getCheckinDate()
+       {
+           return view.getCheckinDate();
+       }
+       
+       String getCheckoutDate()
+       {
+           return view.getCheckoutDate();
+       }
+       
+       void clearTextArea()
+       {
+           view.clearTextArea();
+       }
+       
+       void appendTextArea(String aString)
+       {
+           view.appendTextArea(aString);
+       }
+   }
+   
+    private JPanel makeReservationCard(HotelView aHotelView, Hotel aHotel)
+    {
+       ReservationView view = new ReservationView();
+       ReservationModel model = new ReservationModel(aHotelView, aHotel);
+       ReservationController controller = new ReservationController(model, view);
+       panelContainer.add(view,"makeReservation");
+       return view;
+    }
+
    private JPanel guestOptionsCard()
    {
       if (hotel.getCurrentAccount() == null)

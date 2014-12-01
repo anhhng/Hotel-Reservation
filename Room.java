@@ -2,6 +2,7 @@ package projecttester;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Room implements Serializable
 {
@@ -64,5 +65,10 @@ public class Room implements Serializable
                reservationNumbers.remove(i);
            }
        }
+   }
+   
+   public Iterator<Integer> getReservationItr()
+   {
+       return reservationNumbers.iterator();
    }
 }
