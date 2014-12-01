@@ -17,9 +17,9 @@ public class ProjectTester
    {
       Hotel ADD = new Hotel();
       HotelView frame = new HotelView(ADD);
-      
+      /*
       CreateAccount create = new CreateAccount();
-      Account account = new Account(false, "Bob", "password");
+      Account account = new Account(false, "bob", "bob", "password");
       GregorianCalendar start = new GregorianCalendar(2014, 10, 12);
       GregorianCalendar end = new GregorianCalendar(2014, 10, 19);
       Reservation r = new Reservation(start, end, 1010, 102, 100.00);
@@ -37,7 +37,7 @@ public class ProjectTester
       
       //JFrame frame = new JFrame();
       //frame.add(new CalendarGUI());
-              
+      */        
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       frame.setVisible(true);
       frame.pack();

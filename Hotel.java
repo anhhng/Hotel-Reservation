@@ -43,6 +43,11 @@ public class Hotel implements Serializable
       loadInfo();
    }
    
+   public ArrayList<Account> getAccounts()
+   {
+      return accounts;
+   }
+   
    public Account getCurrentAccount()
    {
       return currentAccount;
@@ -111,9 +116,9 @@ public class Hotel implements Serializable
             reservations.remove(i);
    }
    
-   public void newUser(boolean isManager, String name, String aPassword)
+   public void createAccount(boolean isManager, String name, String username, String aPassword)
    {
-      accounts.add(new Account(isManager, name, aPassword));
+      accounts.add(new Account(isManager, name, username, aPassword));
    }
    
    public void createReceipt()

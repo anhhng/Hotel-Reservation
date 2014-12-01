@@ -43,16 +43,11 @@ public class HotelView extends JFrame
       panelContainer.setLayout(cards);
       panelContainer.add(loginCard(), "loginCard");
       panelContainer.add(guestLoginCard(), "guestLoginCard");
-      panelContainer.add(guestOptionsCard(), "guestOptionsCard");
-      //panelContainer.add(chooseDatesCard(), "chooseDatesCard");
-      //panelContainer.add(chooseRoomCard(), "chooseRoomCard");
-               // parameter on this one because I didn't want to add a bunch of other stuff
-      panelContainer.add(confirmationCard(null), "confirmationCard");
+      //panelContainer.add(makeReservationCard(), "makeReservationCard");
       //panelContainer.add(makeAnotherCard(), "makeAnotherCard");
       //panelContainer.add(transactionCompleteCard(), "transactionCompleteCard");
+      //panelContainer.add(chooseReceipt
       //panelContainer.add(receiptCard(), "receiptCard");
-      panelContainer.add(showReservationsCard(), "showReservationsCard");
-      panelContainer.add(confirmCancellationCard(), "confirmCancellationCard");
       //panelContainer.add(newAccountCard(), "newAccountCard");
       //panelContainer.add(managerLoginCard(), "managerLoginCard");
       //panelContainer.add(managerViewCard(), "managerViewCard");
@@ -196,6 +191,7 @@ public class HotelView extends JFrame
                   System.out.println("Login successful");
                      
                   // Show guest option card
+                  panelContainer.add(guestOptionsCard(), "guestOptionsCard");
                   cards.show(panelContainer, "guestOptionsCard");
                } 
                else 
@@ -226,6 +222,7 @@ public class HotelView extends JFrame
             public void actionPerformed(ActionEvent e)
             {
                System.out.println("Create New Account button Pushed!!");
+               panelContainer.add(newAccountCard(), "newAccountCard");
                cards.show(panelContainer, "newAccountCard");
             }
          });
@@ -287,7 +284,8 @@ public class HotelView extends JFrame
       {
          public void actionPerformed(ActionEvent e)
          {
-            cards.show(panelContainer, "chooseDatesCard");
+            //panelContainer.add(makeReservationCard(), "makeReservationCard");
+            cards.show(panelContainer, "makeReservationCard");
          }
       });
       JButton vcButton = new JButton("View/Cancel Reservations");
@@ -295,6 +293,7 @@ public class HotelView extends JFrame
       {
          public void actionPerformed(ActionEvent e)
          {
+            panelContainer.add(showReservationsCard(), "showReservationsCard");
             cards.show(panelContainer, "showReservationsCard");
          }
       });
@@ -398,7 +397,7 @@ public class HotelView extends JFrame
             cards.show(panelContainer, "guestOptionsCard");
          }
       });
-      JButton cancelButton = new JButton("Cancel");
+      /*JButton cancelButton = new JButton("Cancel");
       cancelButton.addActionListener(new ActionListener()
       {
          public void actionPerformed(ActionEvent e)
@@ -406,14 +405,14 @@ public class HotelView extends JFrame
             System.out.println("Cancel button pressed");
             cards.show(panelContainer, "guestOptionsCard");
          }
-      });
+      });*/
       buttonPanel.setPreferredSize(new Dimension(WIDTH, SECTION_HEIGHT));
       buttonPanel.add(confirmButton);
       buttonPanel.add(backButton);
-      buttonPanel.add(cancelButton);
+      //buttonPanel.add(cancelButton);
       confirmButton.setLocation(WIDTH, SECTION_HEIGHT * 3);
-      backButton.setLocation(WIDTH / 3, SECTION_HEIGHT * 3);
-      cancelButton.setLocation(WIDTH * 2 / 3, SECTION_HEIGHT * 3);
+      backButton.setLocation(WIDTH / 2, SECTION_HEIGHT * 3);
+      //cancelButton.setLocation(WIDTH * 2 / 3, SECTION_HEIGHT * 3);
       panel.add(buttonPanel, BorderLayout.SOUTH);
       
       return panel;
@@ -475,7 +474,7 @@ public class HotelView extends JFrame
       {
          public void actionPerformed(ActionEvent e)
          {
-            cards.show(panelContainer, "chooseDatesCard");
+            cards.show(panelContainer, "makeReservationCard");
          }
       });
       JButton cancelButton = new JButton("Cancel");
@@ -532,6 +531,73 @@ public class HotelView extends JFrame
             cards.show(panelContainer, "showReservationsCard");
          } 
       }); 
+      
+      return panel;
+   }
+   
+   private JPanel newAccountCard()
+   {
+      JPanel panel = new JPanel();
+      
+      JLabel nameLabel = new JLabel("Full Name");
+      JLabel userNameLabel = new JLabel("Choose your username");
+      JLabel passLabel = new JLabel("Create a password");
+      JLabel confPassLabel = new JLabel("Confirm your password");
+      JButton createButton = new JButton("Create Account");
+      JButton cancelButton = new JButton("Cancel");
+      final JTextField name = new JTextField(26);
+      final JTextField userName = new JTextField(20);
+      final JTextField password = new JTextField(22);
+      final JTextField confirmPass = new JTextField(20);
+      
+      // message if failed creating account
+      final JLabel messageLabel = new JLabel();
+      
+      panel.add(nameLabel);	
+      panel.add(name);	
+					
+      panel.add(userNameLabel);
+      panel.add(userName);
+	
+      panel.add(passLabel);
+      panel.add(password);
+			
+      panel.add(confPassLabel);
+      panel.add(confirmPass);
+			
+      panel.add(createButton);
+      panel.add(cancelButton);
+      panel.add(messageLabel);
+      
+      createButton.addActionListener(new ActionListener()
+      {
+         public void actionPerformed(ActionEvent e)
+         {
+            boolean flag = false;
+            if (!password.getText().equals(confirmPass.getText()))
+               messageLabel.setText("Passwords don't match");
+            else
+            {
+               for (int i = 0; i < hotel.getAccounts().size(); i++)
+                  if (userName.getText().equals(hotel.getAccounts().get(i)))
+                     flag = true;
+            }
+            if (flag)
+               messageLabel.setText("Username already taken");
+            else
+            {
+               hotel.createAccount(false, name.getText(), userName.getText(), password.getText());
+               messageLabel.setText("Account created");
+            }
+         }
+      });
+      cancelButton.addActionListener(new ActionListener()
+      {
+         public void actionPerformed(ActionEvent e)
+         {
+            cards.show(panelContainer, "loginCard");
+         }
+      });
       
       return panel;
    }
