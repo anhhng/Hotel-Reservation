@@ -1,32 +1,41 @@
 package projecttester;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Account
+public class Account implements Serializable
 {
   private static int nextID = 1000;
   private boolean manager;
   private int acctID;
   private String acctName;
+  private String username;
   private String password;
   private ArrayList<Integer> reservations;
   
-  public Account(boolean isManager, String name, String aPassword)
+  public Account(boolean isManager, String name, String aUsername, String aPassword)
   {
      acctID = nextID++;
      acctName = name;
+     username = aUsername;
      password = aPassword;
      reservations = new ArrayList<Integer>();
      manager = isManager;
   }
   
-  public Account(boolean isManager, String name, String aPassword, int aAcctID)
+  public Account(boolean isManager, String name, String aUsername, String aPassword, int aAcctID)
   {
      acctID = aAcctID;
      acctName = name;
+     username = aUsername;
      password = aPassword;
      reservations = new ArrayList<>();
      manager = isManager;
+  }
+  
+  public String getUsername()
+  {
+     return username;
   }
   
   public int getReservationNumber(int index)
@@ -37,6 +46,11 @@ public class Account
          System.out.println("getReservationNumber out of bounds");
          return 0;
      }
+  }
+  
+  public ArrayList<Integer> getReservationNumbers()
+  {
+     return reservations;
   }
   
   public void addReservationNumber(int number)

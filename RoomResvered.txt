@@ -1,6 +1,0 @@
-Room 101 Bed # 2 Type: Luxary
-Room 102 Bed # 3 Type: Economic	
-Room 104 Bed # 3 Type: Luxary
-Room 106 Bed # 4 Type: Luxary
-Room 205 Bed # 3 Type: Economic
-Room 216 Bed # 4 Type: Luxary

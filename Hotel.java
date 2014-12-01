@@ -1,15 +1,21 @@
 package projecttester;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
+import static java.lang.Integer.parseInt;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
-public class Hotel
+public class Hotel implements Serializable
 {
    private static final int NUM_OF_ROOMS = 20;
    private static final boolean LUXURY = true;
@@ -37,9 +43,29 @@ public class Hotel
       loadInfo();
    }
    
+   public ArrayList<Account> getAccounts()
+   {
+      return accounts;
+   }
+   
+   public Account getCurrentAccount()
+   {
+      return currentAccount;
+   }
+   
    public Receipt getCurrentReceipt()
    {
       return currentReceipt;
+   }
+   
+   public ArrayList<Reservation> getReservations()
+   {
+      return reservations;
+   }
+   
+   public ArrayList<Reservation> getCurrentReservations()
+   {
+      return currentReservations;
    }
    
    public boolean login(String accountName, String aPassword)
@@ -49,9 +75,9 @@ public class Hotel
       {
          String name = a.getName().toLowerCase();
          String loginName = accountName.toLowerCase();
-         if (name.compareTo(loginName) == 0)
+         if (name.equals(accountName))
          {
-            if (aPassword.compareTo(a.getPassword()) == 0)
+            if (aPassword.equals(a.getPassword()))
             {
                // find match - set currentAccount
                currentAccount = a;
@@ -69,33 +95,67 @@ public class Hotel
       currentReservations = new ArrayList<Reservation>();
    }
    
-   public void makeReservation()
+   public void makeReservation(GregorianCalendar start, GregorianCalendar end, 
+           int accountID, int room, double aCostPerDay)
    {
-      
+      currentReservations.add(new Reservation(start, end, accountID, room, aCostPerDay));
    }
    
-   public void viewReservation()
+   public void confirmReservations()
    {
-      
+      for (int i = 0; i < currentReservations.size(); i++)
+      {
+         reservations.add(currentReservations.get(i));
+      }
    }
    
-   public void cancelReservation()
+   public void cancelReservation(int reservationNumber)
    {
-      
+      for (int i = 0; i < reservations.size(); i++)
+         if (reservations.get(i).getReservationNumber() == reservationNumber)
+            reservations.remove(i);
    }
    
-   public void newUser(boolean isManager, String name, String aPassword)
+   public void createAccount(boolean isManager, String name, String username, String aPassword)
    {
-      accounts.add(new Account(isManager, name, aPassword));
+      accounts.add(new Account(isManager, name, username, aPassword));
    }
    
    public void createReceipt()
    {
-      
+      if (currentAccount != null)
+         currentReceipt = new Receipt(currentReservations, 
+                 currentAccount.getName(), currentAccount.getAcctID());
    }
    
    private void loadInfo()
    {
+      // load accounts and reservations
+      try
+      {
+         ObjectInputStream in = new ObjectInputStream(new FileInputStream("lists.data"));
+         accounts = (ArrayList<Account>) in.readObject();
+         reservations = (ArrayList<Reservation>) in.readObject();
+         in.close();
+      }
+      catch (Exception e)
+      {
+         System.out.println(e);
+      }
+      
+      //load next account and next reservation numbers
+      try
+      {
+         BufferedReader br = new BufferedReader(new FileReader("nexts.data"));
+         Account.setNextID(parseInt(br.readLine()));
+         Reservation.setNextReserverationNumber(parseInt(br.readLine()));
+         br.close();
+      }
+      catch (Exception e)
+      {
+         System.out.println(e);
+      }
+      /*
         try{
             String line;
             BufferedReader br = new BufferedReader(new FileReader("initialData.txt"));
@@ -155,47 +215,75 @@ public class Hotel
             br.close();
         } catch(Exception e) {
             System.out.println(e);
-        }     
+        }  
+      */
    }
    
    public void saveInfo()
    {
-       try {
-           PrintWriter write = new PrintWriter("initialData.txt");
+      // use serialization to save accounts and reservations
+      try
+      {
+         ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("lists.data"));
+         out.writeObject(accounts);
+         out.writeObject(reservations);
+         out.close();
+      }
+      catch (Exception e)
+      {
+         System.out.println(e);
+      }
+      
+      // manually write values for nextAccountId and nextReservationNumber
+      try
+      {
+         PrintWriter write = new PrintWriter("nexts.data");
+         write.println(Account.getNextID());
+         write.println(Reservation.getNextReserverationNumber());
+         write.close();
+      }
+      catch (Exception e)
+      {
+         System.out.println(e);
+      }
+      /*
+      try {
+         PrintWriter write = new PrintWriter("initialData.txt");
            
-           // save next reservation number
-           write.println("nextReservationNumber\t"+Reservation.getNextReserverationNumber());
-           write.println("");
+         // save next reservation number
+         write.println("nextReservationNumber\t"+Reservation.getNextReserverationNumber());
+         write.println("");
            
-           // save next new account number
-           write.println("nextID\t"+Account.getNextID());
-           write.println("");
+         // save next new account number
+         write.println("nextID\t"+Account.getNextID());
+         write.println("");
            
-           // save accounts           write.println("// accounts");
-           write.println("//\t\tmanager\tname\tpassword\tacct#");
-           for (Account account : accounts) {
-               write.print("account\t\t"+(account.isManager()?"true":"false")+"\t");
-               write.print(account.getName()+"\t"+account.getPassword()+"\t\t");
-               write.println(account.getAcctID());
-           }
-           write.println("");
-           write.println("// reservations");
-           write.println("//                Arrival         Depart      AcctId  Room      Cost   ResNumber");
-           DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+         // save accounts           write.println("// accounts");
+         write.println("//\t\tmanager\tname\tpassword\tacct#");
+         for (Account account : accounts) {
+            write.print("account\t\t"+(account.isManager()?"true":"false")+"\t");
+            write.print(account.getName()+"\t"+account.getPassword()+"\t\t");
+            write.println(account.getAcctID());
+         }
+         write.println("");
+         write.println("// reservations");
+         write.println("//                Arrival         Depart      AcctId  Room      Cost   ResNumber");
+         DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
            
-           // save reservations
-           for (Reservation reservation : reservations) {
-               write.print("reservation\t"+dateFormat.format(reservation.getArrivalDate().getTime())+"\t");
-               write.print(dateFormat.format(reservation.getDepartDate().getTime())+"\t");
-               write.print(reservation.getAcctID()+"\t"+reservation.getRoomNumber()+"\t");
-               write.println(reservation.getCostPerDay()+"\t"+reservation.getReservationNumber());
-           }
-           write.println("");
+         // save reservations
+         for (Reservation reservation : reservations) {
+            write.print("reservation\t"+dateFormat.format(reservation.getArrivalDate().getTime())+"\t");
+            write.print(dateFormat.format(reservation.getDepartDate().getTime())+"\t");
+            write.print(reservation.getAcctID()+"\t"+reservation.getRoomNumber()+"\t");
+            write.println(reservation.getCostPerDay()+"\t"+reservation.getReservationNumber());
+         }
+         write.println("");
            
-           // close file
-           write.close();
-       } catch (FileNotFoundException ex) {
-           System.out.println(ex);
-       }
+         // close file
+         write.close();
+      } catch (FileNotFoundException ex) {
+         System.out.println(ex);
+      }
+      */
    }
 }

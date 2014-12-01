@@ -1,10 +1,11 @@
 package projecttester;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class Reservation
+public class Reservation implements Serializable
 {
    private static int nextReservationNumber = 1500;
    private GregorianCalendar startDate;
@@ -41,9 +42,7 @@ public class Reservation
          numberOfDays = endDate.get(Calendar.DAY_OF_YEAR) - startDate.get(Calendar.DAY_OF_YEAR);
       else
          numberOfDays = 365 - startDate.get(Calendar.DAY_OF_YEAR) + endDate.get(Calendar.DAY_OF_YEAR);
-      System.out.println("costPerDay: " + costPerDay + "   days: " + (double)numberOfDays);
       cost = costPerDay * (double)(numberOfDays);
-      System.out.println(cost);
    }
    
    public int getNumberOfDays()
@@ -56,12 +55,12 @@ public class Reservation
       return acctID;
    }
 
-   public Calendar getArrivalDate()
+   public GregorianCalendar getArrivalDate()
    {
       return startDate;
    }
    
-   public Calendar getDepartDate()
+   public GregorianCalendar getDepartDate()
    {
       return endDate;
    }
