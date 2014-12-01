@@ -128,6 +128,11 @@ public class Hotel implements Serializable
                  currentAccount.getName(), currentAccount.getAcctID());
    }
    
+   public void setReceiptView(ReceiptView view)
+   {
+      currentReceipt.setView(view);
+   }
+   
    private void loadInfo()
    {
       // load accounts and reservations

@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.MouseInputAdapter;
@@ -43,13 +44,8 @@ public class HotelView extends JFrame
       panelContainer.setLayout(cards);
       panelContainer.add(loginCard(), "loginCard");
       panelContainer.add(guestLoginCard(), "guestLoginCard");
+      panelContainer.add(managerLoginCard(), "managerLoginCard");
       //panelContainer.add(makeReservationCard(), "makeReservationCard");
-      //panelContainer.add(makeAnotherCard(), "makeAnotherCard");
-      //panelContainer.add(transactionCompleteCard(), "transactionCompleteCard");
-      //panelContainer.add(chooseReceipt
-      //panelContainer.add(receiptCard(), "receiptCard");
-      //panelContainer.add(newAccountCard(), "newAccountCard");
-      //panelContainer.add(managerLoginCard(), "managerLoginCard");
       //panelContainer.add(managerViewCard(), "managerViewCard");
       
       cards.first(panelContainer);
@@ -500,19 +496,18 @@ public class HotelView extends JFrame
    
    private JPanel confirmCancellationCard()
    {
-      setSize(50,50);
       JPanel panel = new JPanel();
 		
       JLabel label = new JLabel("Are you sure you want to cancel reservations?",
               SwingConstants.CENTER);
-      JButton cancel = new JButton("No");
+      JButton noButton = new JButton("No");
 	
-      JButton confirm = new JButton("Yes");
+      JButton yesButton = new JButton("Yes");
 	
       panel.add(label);
-      panel.add(confirm);
-      panel.add(cancel);
-      cancel.addActionListener(new ActionListener() 
+      panel.add(yesButton);
+      panel.add(noButton);
+      noButton.addActionListener(new ActionListener() 
       { 
          @Override 
          public void actionPerformed(ActionEvent arg0)
@@ -522,7 +517,7 @@ public class HotelView extends JFrame
             cards.show(panelContainer, "showReservationsCard");
          } 
       }); 
-      confirm.addActionListener(new ActionListener() 
+      yesButton.addActionListener(new ActionListener() 
       { 
          @Override 
          public void actionPerformed(ActionEvent arg0)
@@ -574,6 +569,9 @@ public class HotelView extends JFrame
       {
          public void actionPerformed(ActionEvent e)
          {
+            // to create manager
+            if (userName.getText().equals("manager"))
+               hotel.createAccount(true, "manager", "manager", password.getText());
             boolean flag = false;
             if (!password.getText().equals(confirmPass.getText()))
                messageLabel.setText("Passwords don't match");
@@ -586,11 +584,11 @@ public class HotelView extends JFrame
                      flag = true;
                   }
                }
-               if (flag)
+               if (flag && !userName.getText().equals("manager"))
                {
                   messageLabel.setText("Username already taken");
                }
-               else
+               else if (!userName.getText().equals("manager"))
                {
                   hotel.createAccount(false, name.getText(), userName.getText(), password.getText());
                   hotel.login(userName.getText(), password.getText());
@@ -609,6 +607,196 @@ public class HotelView extends JFrame
          }
       });
       
+      return panel;
+   }
+   
+   private JPanel makeAnotherCard()
+   {
+      JPanel panel = new JPanel();
+		
+      JLabel label = new JLabel("Do you want to make another reservation?",
+              SwingConstants.CENTER);
+      JButton noButton = new JButton("No");
+	
+      JButton yesButton = new JButton("Yes");
+	
+      panel.add(label);
+      panel.add(yesButton);
+      panel.add(noButton);
+      noButton.addActionListener(new ActionListener() 
+      { 
+         @Override 
+         public void actionPerformed(ActionEvent arg0)
+         { 
+            //add our code to cancel reservation
+            System.out.println("No button clicked");
+            panelContainer.add(chooseReceiptCard(), "chooseReceiptCard");
+            cards.show(panelContainer, "chooseReceiptCard");
+         } 
+      }); 
+      yesButton.addActionListener(new ActionListener() 
+      { 
+         @Override 
+         public void actionPerformed(ActionEvent arg0)
+         { 
+            //add our code here to make a confirmation
+            System.out.println("Yes button clicked");
+            //panelContainer.add(makeReservationCard(), "makeReservationCard");
+            //cards.show(panelContainer, "makeReservationCard");
+         } 
+      }); 
+      
+      return panel;
+   }
+   
+   private JPanel chooseReceiptCard()
+   {
+      JPanel panel = new JPanel();
+		
+      JLabel label = new JLabel("Which type of receipt would you like?",
+              SwingConstants.CENTER);
+      JButton simpleButton = new JButton("Simple");
+	
+      JButton compButton = new JButton("Comprehensive");
+	
+      panel.add(label);
+      panel.add(simpleButton);
+      panel.add(compButton);
+      simpleButton.addActionListener(new ActionListener() 
+      { 
+         @Override 
+         public void actionPerformed(ActionEvent arg0)
+         { 
+            //add our code to cancel reservation
+            System.out.println("Simple button clicked");
+            hotel.createReceipt();
+            panelContainer.add(receiptCard(), "receiptCard");
+            cards.show(panelContainer, "receiptCard");
+         } 
+      }); 
+      compButton.addActionListener(new ActionListener() 
+      { 
+         @Override 
+         public void actionPerformed(ActionEvent arg0)
+         { 
+            //add our code here to make a confirmation
+            System.out.println("Comprehensive button clicked");
+            hotel.createReceipt();
+            hotel.setReceiptView(new ComprehensiveView());
+            panelContainer.add(receiptCard(), "receiptCard");
+            cards.show(panelContainer, "receiptCard");
+         } 
+      }); 
+      
+      return panel;
+   }
+   
+   private JPanel receiptCard()
+   {
+      JPanel panel = new JPanel();
+      
+      JTextArea area = new JTextArea();
+      area.setText(hotel.getCurrentReceipt().print());
+      area.setPreferredSize(new Dimension(500,300));
+      panel.add(area, BorderLayout.NORTH);
+      
+      JPanel aPanel = new JPanel();
+      JButton button = new JButton("Continue");
+      aPanel.add(button);
+      button.addActionListener(new ActionListener()
+      {
+         public void actionPerformed(ActionEvent e)
+         {
+            System.out.println("Continue button pressed!");
+            cards.show(panelContainer, "guestOptionsCard");
+         }
+      });
+      panel.add(panel);
+      
+      return panel;
+   }
+   
+   private JPanel managerLoginCard()
+   {
+      JPanel panel = new JPanel();
+      panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+       
+      // create Welcome panel
+      JPanel welcomePanel = new JPanel();
+      JLabel welcomeLabel = new JLabel("Welcome, Mr. Manager!");
+      welcomeLabel.setFont(new Font("Calibri", Font.BOLD, 18));
+      welcomeLabel.setHorizontalAlignment(JLabel.CENTER);
+      welcomeLabel.setVerticalAlignment(JLabel.BOTTOM);
+      welcomePanel.add(welcomeLabel); // add user ID label
+       
+      // create Password panel
+      JPanel userPwdPanel = new JPanel();
+       
+      // password label
+      JLabel pwdLabel = new JLabel("Password:");
+      pwdLabel.setFont(new Font("Calibri", Font.BOLD, 18));
+      pwdLabel.setHorizontalAlignment(JLabel.CENTER);
+      pwdLabel.setVerticalAlignment(JLabel.TOP);
+       
+      // password text field
+      final JTextField userPwdText = new JPasswordField(20);
+      userPwdPanel.add(pwdLabel);   // add pwd label
+      userPwdPanel.add(userPwdText); // add pwd text field
+       
+      // create buttons for panel
+      JPanel buttonPanel = new JPanel();
+      JButton loginButton = new JButton("Login");
+      JButton cancelButton = new JButton("Cancel");
+      buttonPanel.add(loginButton);
+      buttonPanel.add(cancelButton);
+      
+      // message if failed login
+      final JLabel messageLabel = new JLabel();
+       
+      // Add panels to guestLoginCard
+      panel.add(welcomePanel);
+      panel.add(userPwdPanel);
+      panel.add(buttonPanel);
+      panel.add(messageLabel);
+              
+      //panelContainer.add(guestLoginCard,"guestLoginCard");
+       
+      // Action Listner for login button
+      loginButton.addActionListener(new ActionListener()
+         {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+               // Login Button Pushed. Check Password
+               System.out.println("   Passwd: " + userPwdText.getText());
+               if (hotel.login("manager", userPwdText.getText()))
+               {
+                  System.out.println("Login successful");
+                     
+                  // Show manager view card
+                  userPwdText.setText(null);
+                  cards.show(panelContainer, "managerViewCard");
+               } 
+               else 
+               {
+                  System.out.println("Login failed");
+                  userPwdText.setText(null);
+                  messageLabel.setText("Login failed");
+               }
+            }
+         });
+
+      // Action Listner for cancel button
+      cancelButton.addActionListener(new ActionListener()
+         {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+               System.out.println("Cancel button Pushed!");
+               cards.show(panelContainer, "loginCard");
+            }
+         });
+
       return panel;
    }
 }
