@@ -5,11 +5,12 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
-
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -28,14 +29,13 @@ import javax.swing.JTextArea;
 		private JLabel AvaRoomLabel = new JLabel("Available Rooms"+"     ");
 		private JLabel ResRoomLabel = new JLabel("Reserved Rooms");
 		private JLabel emptyLabel = new JLabel("                                                    ");
-		private JButton button = new JButton("Book the selected room");
-		private JCheckBox AgreeButton = new JCheckBox("Agree");
-		
+		private JButton button = new JButton("Save and Quit");
+	
 		private JTextArea screen1 = new JTextArea(20,25);
 		private JTextArea screen2 = new JTextArea(20,25);
 
 		
-		public RoomsViewGUI() throws Exception
+		public RoomsViewGUI(String datepicked) throws Exception
 		{
 			JPanel  panel = new JPanel();
 			JPanel panel1 = new JPanel();
@@ -48,15 +48,28 @@ import javax.swing.JTextArea;
 			 panel.add(screen1);  
 			 panel.add(screen2);
 			
-			panel.add(AgreeButton);
 			panel.add(button);
 			
 			try {
-				FileReader reader = new FileReader( "RoomsAvailable.txt" );
-                BufferedReader br = new BufferedReader(reader);
-                screen1.add(new JCheckBox());
-                screen1.read( br, null );
-                br.close();       
+				//FileReader reader = new FileReader( "RoomsAvailable.txt" );
+                //BufferedReader br = new BufferedReader(reader);
+               // screen1.add(new JCheckBox());
+               // screen1.read( br, null );
+               // br.close(); 
+				Hotel hotel = new Hotel();
+				
+				ArrayList<Reservation> list = hotel.getReservations();
+				ObjectInputStream in = new ObjectInputStream(new FileInputStream("list.data")); 
+				ArrayList<Reservation> staff = (ArrayList<Reservation>) in.readObject();
+				in.close(); 
+				String listString = "";
+
+				for (Reservation s : list)
+				{
+				    listString += s + "\t";
+				}
+				screen1.append(listString);
+				
 		    }
 		    catch(Exception e2) 
 		    { 
@@ -74,13 +87,7 @@ import javax.swing.JTextArea;
 		        System.out.println(e2);            
 		    }
 			
-			AgreeButton.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					System.out.println("Agreed");
-				}
-			});
+			
 			button.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
