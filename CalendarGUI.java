@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -16,6 +17,7 @@ import java.util.GregorianCalendar;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -68,6 +70,7 @@ public class CalendarGUI extends JPanel {
     buildGUI();
     //recompute();
     printCalendarMonthYear();
+
   }
 
 
@@ -177,26 +180,40 @@ public class CalendarGUI extends JPanel {
     bp.add(WED);
     bp.add(THU);
     bp.add(FRI);
-    bp.add(SAT);
-
-    MouseAdapter dateSetter = new MouseAdapter()
-    {
-    	public void MousePressed(MouseEvent e)
-      {
-
-    		// click a day to display reservation
-
-      }
-    };
+    bp.add(SAT);  
 
     // Construct all the labels, and add them.
     for (int i = 0; i < 6; i++)
-      for (int j = 0; j < 7; j++) {
+      for (int j = 0; j < 7; j++)
+      {
         bp.add(labs[i][j] = new JLabel(""));
-        labs[i][j].addMouseListener(dateSetter);
+        final int col = i;
+        final int row = j;
+        labs[i][j].addMouseListener(new MouseAdapter()
+        {
+        	
+        	public void mouseClicked(MouseEvent e)
+        	{
+        		
+        		System.out.println(labs[col][row].getText());
+        		String datepicked = labs[col][row].getText();
+        		try {
+					RoomsViewGUI roomview = new RoomsViewGUI(datepicked);
+					JFrame frame = new RoomsViewGUI(datepicked);
+					frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				      frame.setVisible(true);
+				      frame.pack();
+				} catch (Exception e1)
+        		{					
+					e1.printStackTrace();
+        		}
+        	}
+			
+        });
       }
 
     add(BorderLayout.SOUTH, bp);
+  
   }
 
 
@@ -308,5 +325,4 @@ public class CalendarGUI extends JPanel {
 		      b.setBackground(translucent.getBackground());
 		    }
 	 }
-
 }
