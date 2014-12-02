@@ -582,7 +582,7 @@ System.out.println("FIX! what card receipt");
                     if (available == true)
                     {
                         reserveRoom = room;
-                        controller.appendTextArea(String.valueOf(room.getRoomNumber()));
+                        controller.appendTextArea("   #" + String.valueOf(room.getRoomNumber()));
                         controller.appendTextArea("\n");
                     }
                 }
@@ -603,8 +603,11 @@ System.out.println("FIX! what card receipt");
             
             // add reservation to account
             hotel.getCurrentAccount().addReservationNumber(reservation.getReservationNumber());
+            reserveRoom.addReservationNumber(reservation.getReservationNumber());
             
-            
+            controller.setCheckinDate("");            
+            controller.setCheckoutDate("");            
+            controller.clearTextArea();
             controller.setMessage("Next Reservation or Transaction Done");
         }
     }
