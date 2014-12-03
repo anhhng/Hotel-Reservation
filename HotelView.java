@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
 import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -39,8 +38,8 @@ public class HotelView extends JFrame
    private static final int TEXT_HEIGHT = 12;
    private static final int BORDER_OFFSET = 20;
    CardLayout cards;
-   private Hotel hotel;
-   private JPanel panelContainer;
+   private final Hotel hotel;
+   private final JPanel panelContainer;
    Date ReservationStartDate;
    Date ReservationEndDate;
    boolean luxuryRoom;
@@ -55,8 +54,6 @@ public class HotelView extends JFrame
       panelContainer.add(loginCard(), "loginCard");
       panelContainer.add(guestLoginCard(), "guestLoginCard");
       panelContainer.add(managerLoginCard(), "managerLoginCard");
-      panelContainer.add(makeReservationCard(this, hotel), "makeReservationCard");
-      //panelContainer.add(managerViewCard(), "managerViewCard");
       
       cards.first(panelContainer);
       
@@ -144,7 +141,7 @@ public class HotelView extends JFrame
       userIdLabel.setFont(new Font("Calibri", Font.BOLD, 18));
       userIdLabel.setHorizontalAlignment(JLabel.CENTER);
       userIdLabel.setVerticalAlignment(JLabel.BOTTOM);
-      final JTextField userIdText = new JTextField(20);
+      final JTextField userIdText = new JTextField(22);
       userNamePanel.add(userIdLabel); // add user ID label
       userNamePanel.add(userIdText); // add user ID text field
        
@@ -175,13 +172,12 @@ public class HotelView extends JFrame
       final JLabel messageLabel = new JLabel();
        
       // Add panels to guestLoginCard
+      guestLoginCard.add(new JPanel());
       guestLoginCard.add(userNamePanel);
       guestLoginCard.add(userPwdPanel);
       guestLoginCard.add(buttonPanel);
       guestLoginCard.add(messageLabel);
               
-      //panelContainer.add(guestLoginCard,"guestLoginCard");
-       
       // Action Listner for login button
       loginButton.addActionListener(new ActionListener()
          {
@@ -195,6 +191,10 @@ public class HotelView extends JFrame
                if (hotel.login(userIdText.getText(), userPwdText.getText()))
                {
                   System.out.println("Login successful");
+                  
+                  // clear user and password
+                  userIdText.setText(null);
+                  userPwdText.setText(null);
                      
                   // Show guest option card
                   panelContainer.add(guestOptionsCard(), "guestOptionsCard");
@@ -218,6 +218,11 @@ public class HotelView extends JFrame
             public void actionPerformed(ActionEvent e)
             {
                System.out.println("Cancel button Pushed!");
+               
+               // clear user and password
+               userIdText.setText(null);
+               userPwdText.setText(null);
+                     
                cards.show(panelContainer, "loginCard");
             }
          });
@@ -229,6 +234,11 @@ public class HotelView extends JFrame
             public void actionPerformed(ActionEvent e)
             {
                System.out.println("Create New Account button Pushed!!");
+               
+               // clear user and password
+               userIdText.setText(null);
+               userPwdText.setText(null);
+                     
                panelContainer.add(newAccountCard(), "newAccountCard");
                cards.show(panelContainer, "newAccountCard");
             }
@@ -302,6 +312,7 @@ public class HotelView extends JFrame
             messageLabel = new JLabel("          ");
             messageLabel.setMinimumSize(new Dimension(400,25));
             messageLabel.setHorizontalAlignment(JLabel.LEFT);
+            messageLabel.setForeground(Color.red);
 
             // reservationPanel
             JPanel reservationPanel = new JPanel();
@@ -365,7 +376,7 @@ public class HotelView extends JFrame
             this.transactionDoneButton.addActionListener(aListener);
         }
         
-        void addConfirmationListener(ActionListener aListener)
+        void addConfirmListener(ActionListener aListener)
         {
             this.confirmationButton.addActionListener(aListener);
         }
@@ -404,17 +415,24 @@ public class HotelView extends JFrame
         {
             this.roomsTextArea.setText(null);
         }
+        
+        void updateRoomList(ArrayList<String> aList)
+        {
+            clearTextArea();
+            for (String s: aList)
+                appendTextArea(s);
+        }
     }
    
     class ReservationModel
     {
-        ReservationController controller;
         String checkinDate;
         String checkoutDate;
         boolean luxury;
         boolean NoConfirmation;
         Hotel hotel;
         Room reserveRoom;  // room this reserve
+        ArrayList<String> roomList;
         
         ReservationModel(HotelView aHotelView, Hotel aHotel)
         {
@@ -422,14 +440,15 @@ public class HotelView extends JFrame
             this.checkinDate = "00/00/0000";
             this.checkoutDate = "00/00/0000";
             this.NoConfirmation = false;
+            this.roomList = new ArrayList<>();
         }
-        
-        void setController(ReservationController aController)
+
+        ArrayList<String> getRoomList()
         {
-            controller = aController;
+            return roomList;
         }
         
-        void setCheckinDate(String aText)
+        String setCheckinDate(String aText)
         {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy");
             try {
@@ -437,16 +456,14 @@ public class HotelView extends JFrame
             } 
             catch (ParseException ex)
             {
-                controller.setMessage("Bad Checkin Date");
-                controller.setCheckinDate("");
-                ReservationStartDate = null;
+                return "Bad Checkin Date";
             }
             checkinDate = aText;
             
-            confirmation(true);
+            return confirmUpdate(true);
         }
         
-        void setCheckoutDate(String aText)
+        String setCheckoutDate(String aText)
         {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy");
             try {
@@ -454,118 +471,85 @@ public class HotelView extends JFrame
             } 
             catch (ParseException ex)
             {
-                controller.setMessage("Bad Checkout Date");
-                controller.setCheckoutDate("");
-                ReservationEndDate = null;
+                return "Bad Checkout Date";
             }
             checkoutDate = aText;
-            confirmation(true);
-        }
-        
-        void setTransActionDone()
-        {
-System.out.println("FIX! what card receipt");
-            cards.show(panelContainer, "guestOptionsCard");
+            return confirmUpdate(true);
         }
         
         void luxury(boolean aValue)
         {
             luxury = aValue;
-            confirmation(true);
+            confirmUpdate(true);
         }
         
-        void confirmation(boolean aOnlyUpdate)
+        String confirmUpdate(boolean aUpdate)
         {
+            roomList.clear();
+            
             if (NoConfirmation == true)
-                return;
+                return null;
             else
                 NoConfirmation = true;
                         
-            setCheckinDate(controller.getCheckinDate());
-            setCheckoutDate(controller.getCheckoutDate());
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy");
             if (ReservationStartDate == null)
             {
-                controller.setMessage("No Checkin Date");
                 NoConfirmation = false;
-                return;
+                return "No Checkin Date";
             }
             else if (ReservationEndDate == null)
             {
-                controller.setMessage("No Checkout Date");
                 NoConfirmation = false;
-                return;
+                return "No Checkout Date";
             }
-
-            // Check Reservation Start Date
-            controller.setCheckinDate(simpleDateFormat.format(ReservationStartDate));
 
             // Check before today
             Date todayDate = new Date();
             if (ReservationStartDate.getTime() + 86400000 < todayDate.getTime())
             {
-                controller.setMessage("Start Date before today");
-                controller.setCheckinDate("");
                 ReservationStartDate = null;
                 NoConfirmation = false;
-                return;
+                return "Start Date before today";
             }
-            else
-            {
-                 controller.setMessage("                      ");
-            }
-
-            // Check Reservation End Date
-            controller.setCheckoutDate(simpleDateFormat.format(ReservationEndDate));
 
             // Check before today
             if (ReservationEndDate.compareTo(new Date()) < 0)
             {
-                controller.setMessage("End Date before today");
-                controller.setCheckoutDate("");
                 ReservationEndDate = null;
                 NoConfirmation = false;
-                return;
-            }
-            else
-            {
-                controller.setMessage("                    ");
+                return "End Date before today";
             }
 
             if (ReservationStartDate == null)
             {
-                controller.setMessage("Start Date not set");
+                NoConfirmation = false;
+                return "Start Date not set";
             }
             else if (ReservationEndDate == null)
             {
-                controller.setMessage("End Date not set");
+                NoConfirmation = false;
+                return "End Date not set";
             }
             else if (ReservationStartDate.getTime() >= ReservationEndDate.getTime())
             {
-                controller.setMessage("End Date before Start Date");
-                controller.setCheckinDate("");
-                controller.setCheckoutDate("");
+                NoConfirmation = false;
+                return "End Date before Start Date";
             }
             else if ((ReservationStartDate.getTime() + 5184000000L) < ReservationEndDate.getTime())
             {
-                controller.setMessage("Reservation to long");
-                controller.setCheckoutDate("");
+                NoConfirmation = false;
+                return "Reservation to long";
             }
             
-            // clear roomTextArea
-            controller.clearTextArea();
-            
-            Iterator<Room> roomItr = hotel.getRoomItr();
+            ArrayList<Room> rooms = hotel.getRooms();
             reserveRoom = null;
-            while (roomItr.hasNext())
+            for (Room room: rooms)
             {
                 boolean available = true;
-                Room room = roomItr.next();
                 if (room.isLuxury() == luxury) {
-                    Iterator<Integer> reservationItr = room.getReservationItr();
-                    while ( reservationItr.hasNext())
+                    ArrayList<Integer> reservations = room.getReservations();
+                    for (Integer reservationNumber: reservations)
                     {
-                        Integer reservationNumber = reservationItr.next();
                         Reservation reservation = hotel.getReservation(reservationNumber);
                         Date startDate = reservation.getArrivalDate().getTime();
                         Date endDate = reservation.getDepartDate().getTime();
@@ -574,7 +558,7 @@ System.out.println("FIX! what card receipt");
                             (ReservationEndDate.getTime() > startDate.getTime() &&
                              ReservationEndDate.getTime() <= endDate.getTime()))
                         {
-                            // Reservation for this room not available
+                            // Can not reserve this room
                             available = false;
                             break;
                         }
@@ -582,17 +566,18 @@ System.out.println("FIX! what card receipt");
                     if (available == true)
                     {
                         reserveRoom = room;
-                        controller.appendTextArea("   #" + String.valueOf(room.getRoomNumber()));
-                        controller.appendTextArea("\n");
+                        roomList.add("   #" + String.valueOf(room.getRoomNumber()) + "\n");
                     }
                 }
             }
             
             NoConfirmation = false;
-            if (aOnlyUpdate)
-                return;
+            if (aUpdate) 
+                return null;  // Only do update no confirm
             
-            // add reservation
+            // Confirmation
+            
+            // add to reservations
             GregorianCalendar rStart = new GregorianCalendar();
             GregorianCalendar rEnd = new GregorianCalendar();
             rStart.setTime(ReservationStartDate);
@@ -601,14 +586,11 @@ System.out.println("FIX! what card receipt");
                       reserveRoom.getRoomNumber(), reserveRoom.getCostPerDay());
             hotel.addReservation(reservation);
             
-            // add reservation to account
+            // add reservation number to account
             hotel.getCurrentAccount().addReservationNumber(reservation.getReservationNumber());
             reserveRoom.addReservationNumber(reservation.getReservationNumber());
             
-            controller.setCheckinDate("");            
-            controller.setCheckoutDate("");            
-            controller.clearTextArea();
-            controller.setMessage("Next Reservation or Transaction Done");
+            return null;
         }
     }
        
@@ -622,89 +604,102 @@ System.out.println("FIX! what card receipt");
            this.model = aModel;
            this.view = aView;
            
-           aModel.setController(this);
-           
            this.view.addCheckinDateListener(new ActionListener () {
+                @Override
                 public void actionPerformed(ActionEvent e) {
-                    String text = view.getCheckinDate();
-                    model.setCheckinDate(text);
-                }}
+                    model.setCheckoutDate(view.getCheckoutDate());
+                    model.setCheckinDate(view.getCheckinDate());
+                    view.clearTextArea();
+                    String result = model.confirmUpdate(true);
+                    if (result != null)
+                        view.setMessageText(result);
+                    else
+                        view.setMessageText("    ");
+                    view.updateRoomList(model.getRoomList());
+                 }}
            );
            
            this.view.addCheckoutDateListener(new ActionListener () {
+                @Override
                 public void actionPerformed(ActionEvent e) {
-                    String text = view.getCheckoutDate();
-                    model.setCheckoutDate(text);
+                    model.setCheckoutDate(view.getCheckoutDate());
+                    model.setCheckinDate(view.getCheckinDate());
+                    view.clearTextArea();
+                    String result = model.confirmUpdate(true);
+                    if (result != null)
+                        view.setMessageText(result);
+                    else
+                        view.setMessageText("    ");
+                    view.updateRoomList(model.getRoomList());
                 }}
            );
            
            this.view.addTransactionDoneListener(new ActionListener () {
+                @Override
                 public void actionPerformed(ActionEvent e) {
-                    model.setTransActionDone();
+                    panelContainer.add(chooseReceiptCard(),"chooseReceiptCard");
+                    cards.show(panelContainer,"chooseReceiptCard");
                 }}
            );
            
            this.view.addLuxuryButtonListener(new ActionListener () {
+                @Override
                 public void actionPerformed(ActionEvent e) {
+                    view.clearTextArea();
                     model.luxury(true);
+                    model.setCheckinDate(view.getCheckinDate());
+                    model.setCheckoutDate(view.getCheckoutDate());
+                    String result = model.confirmUpdate(true);
+                    if (result != null)
+                        view.setMessageText(result);
+                    else
+                        view.setMessageText("    ");
+                    view.updateRoomList(model.getRoomList());
                 }}
            );
            
            this.view.addEcomonyButtonListener(new ActionListener () {
+                @Override
                 public void actionPerformed(ActionEvent e) {
+                    view.clearTextArea();
                     model.luxury(false);
+                    model.setCheckinDate(view.getCheckinDate());
+                    model.setCheckoutDate(view.getCheckoutDate());
+                    String result = model.confirmUpdate(true);
+                    if (result != null)
+                        view.setMessageText(result);
+                    else
+                        view.setMessageText("    ");
+                    view.updateRoomList(model.getRoomList());
                 }}
            );
            
-           this.view.addConfirmationListener(new ActionListener () {
+           this.view.addConfirmListener(new ActionListener () {
+                @Override
                 public void actionPerformed(ActionEvent e) {
-                    model.confirmation(false);
+                    
+                    model.setCheckinDate(view.getCheckinDate());
+                    model.setCheckoutDate(view.getCheckoutDate());
+                    String result = model.confirmUpdate(false);
+                    if (result == null)
+                    {
+                        panelContainer.add(makeAnotherCard(),"makeAnotherCard");
+                        cards.show(panelContainer,"makeAnotherCard");
+                    }
+                    else if (result.equals("update"))
+                    {
+                        view.updateRoomList(model.getRoomList());
+                    }
                 }}
            );
        }
-       
-       void setMessage(String aMessage)
-       {
-           view.setMessageText(aMessage);
-       }
-       
-       void setCheckinDate(String aDate)
-       {
-           view.setCheckinDate(aDate);
-       }
-       
-       void setCheckoutDate(String aDate)
-       {
-           view.setCheckoutDate(aDate);
-       }
-       
-       String getCheckinDate()
-       {
-           return view.getCheckinDate();
-       }
-       
-       String getCheckoutDate()
-       {
-           return view.getCheckoutDate();
-       }
-       
-       void clearTextArea()
-       {
-           view.clearTextArea();
-       }
-       
-       void appendTextArea(String aString)
-       {
-           view.appendTextArea(aString);
-       }
    }
    
-    private JPanel makeReservationCard(HotelView aHotelView, Hotel aHotel)
+    private JPanel makeReservationCard()
     {
        ReservationView view = new ReservationView();
-       ReservationModel model = new ReservationModel(aHotelView, aHotel);
+       ReservationModel model = new ReservationModel(this, hotel);
        ReservationController controller = new ReservationController(model, view);
-       panelContainer.add(view,"makeReservation");
        return view;
     }
 
@@ -763,7 +758,7 @@ System.out.println("FIX! what card receipt");
       {
          public void actionPerformed(ActionEvent e)
          {
-            //panelContainer.add(makeReservationCard(), "makeReservationCard");
+            panelContainer.add(makeReservationCard(), "makeReservationCard");
             cards.show(panelContainer, "makeReservationCard");
          }
       });
@@ -1123,8 +1118,8 @@ System.out.println("FIX! what card receipt");
          { 
             //add our code here to make a confirmation
             System.out.println("Yes button clicked");
-            //panelContainer.add(makeReservationCard(), "makeReservationCard");
-            //cards.show(panelContainer, "makeReservationCard");
+            panelContainer.add(makeReservationCard(), "makeReservationCard");
+            cards.show(panelContainer, "makeReservationCard");
          } 
       }); 
       
@@ -1193,7 +1188,7 @@ System.out.println("FIX! what card receipt");
             cards.show(panelContainer, "guestOptionsCard");
          }
       });
-      panel.add(panel);
+      panel.add(aPanel);
       
       return panel;
    }

@@ -25,7 +25,6 @@ public class Hotel implements Serializable
    private ArrayList<Reservation> reservations;
    private ArrayList<Account> accounts;
    private ArrayList<Reservation> currentReservations;
-   private ArrayList<Integer> receiptQueue;
    private Account currentAccount;
    private Receipt currentReceipt;
 
@@ -35,7 +34,6 @@ public class Hotel implements Serializable
       reservations = new ArrayList<Reservation>();
       accounts = new ArrayList<Account>();
       currentReservations = new ArrayList<Reservation>();      
-      receiptQueue = new ArrayList<Integer>();
       
       for (int i = 0; i < NUM_OF_ROOMS / 2; i++)
          rooms.add(new Room(100 + i, LUXURY));
@@ -194,14 +192,9 @@ public class Hotel implements Serializable
       }
    }
    
-   public Iterator<Room> getRoomItr()
+   public ArrayList<Room> getRooms()
    {
-       return rooms.iterator();
-   }
-   
-   public Iterator<Reservation> getReservationItr()
-   {
-       return reservations.iterator();
+       return rooms;
    }
    
    public Reservation getReservation(Integer aReservation)
@@ -209,12 +202,14 @@ public class Hotel implements Serializable
        for(Reservation r: reservations)
            if (r.getReservationNumber() == aReservation)
                 return r;
+       for(Reservation r: currentReservations)
+           if (r.getReservationNumber() == aReservation)
+                return r;
        return null;
    }
    
-   public boolean addReservation(Reservation aReservation)
+   public void addReservation(Reservation aReservation)
    {
-       receiptQueue.add(aReservation.getReservationNumber());
-       return reservations.add(aReservation);
+       currentReservations.add(aReservation);
    }
 }

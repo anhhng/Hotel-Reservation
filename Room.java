@@ -67,8 +67,8 @@ public class Room implements Serializable
        }
    }
    
-   public Iterator<Integer> getReservationItr()
+   public ArrayList<Integer> getReservations()
    {
-       return reservationNumbers.iterator();
+       return reservationNumbers;
    }
 }
