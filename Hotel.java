@@ -36,8 +36,8 @@ public class Hotel implements Serializable
       currentReservations = new ArrayList<Reservation>();      
       
       for (int i = 0; i < NUM_OF_ROOMS / 2; i++)
-         rooms.add(new Room(100 + i, LUXURY));
-      for (int i = NUM_OF_ROOMS / 2; i < NUM_OF_ROOMS; i++)
+         rooms.add(new Room(200 + i, LUXURY));
+      for (int i = 0; i < NUM_OF_ROOMS / 2; i++)
          rooms.add(new Room(100 + i, ECONOMY));
       
       // get save account reservation data
