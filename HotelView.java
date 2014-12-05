@@ -32,7 +32,7 @@ import javax.swing.event.MouseInputAdapter;
 
 public class HotelView extends JFrame
 {
-   private static final int WIDTH = 450;
+   private static final int WIDTH = 510;
    private static final int HEIGHT = 300;
    private static final int SECTION_HEIGHT = 50;
    private static final int TEXT_HEIGHT = 12;
@@ -991,6 +991,7 @@ public class HotelView extends JFrame
          public void actionPerformed(ActionEvent e)
          {
             System.out.println("Confirm!!!");
+            panelContainer.add(confirmCancellationCard(), "confirmCancellationCard");
             cards.show(panelContainer, "confirmCancellationCard");
          }
       });
@@ -1003,15 +1004,6 @@ public class HotelView extends JFrame
             cards.show(panelContainer, "guestOptionsCard");
          }
       });
-      /*JButton cancelButton = new JButton("Cancel");
-      cancelButton.addActionListener(new ActionListener()
-      {
-         public void actionPerformed(ActionEvent e)
-         {
-            System.out.println("Cancel button pressed");
-            cards.show(panelContainer, "guestOptionsCard");
-         }
-      });*/
       buttonPanel.setPreferredSize(new Dimension(WIDTH, SECTION_HEIGHT));
       buttonPanel.add(confirmButton);
       buttonPanel.add(backButton);
@@ -1144,10 +1136,10 @@ public class HotelView extends JFrame
    {
       JPanel panel = new JPanel();
       
-      JLabel nameLabel = new JLabel("Full Name");
-      JLabel userNameLabel = new JLabel("Choose your username");
-      JLabel passLabel = new JLabel("Create a password");
-      JLabel confPassLabel = new JLabel("Confirm your password");
+      JLabel nameLabel = new JLabel("   Full Name");
+      JLabel userNameLabel = new JLabel("   Choose your username");
+      JLabel passLabel = new JLabel("   Create a password");
+      JLabel confPassLabel = new JLabel("   Confirm your password");
       JButton createButton = new JButton("Create Account");
       JButton cancelButton = new JButton("Cancel");
       final JTextField name = new JTextField(26);
@@ -1306,7 +1298,7 @@ public class HotelView extends JFrame
       
       JTextArea area = new JTextArea();
       area.setText(hotel.getCurrentReceipt().print());
-      area.setPreferredSize(new Dimension(500,300));
+      //area.setPreferredSize(new Dimension(WIDTH - BORDER_OFFSET, HEIGHT - SECTION_HEIGHT * 2));
       panel.add(area, BorderLayout.NORTH);
       
       JPanel aPanel = new JPanel();

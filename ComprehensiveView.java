@@ -11,7 +11,7 @@ public class ComprehensiveView extends BaseView
       {
          output = output + r.getReservationNumber() + "\t" + r.getRoomNumber() +
                  "\t" + r.printStartDate() + "\t" + r.printEndDate() + "\t" + r.getNumberOfDays() + "\t" + 
-                 r.getCost() + "\n";
+                 r.getCost() + "0\n";
       }
       return output;
    }
