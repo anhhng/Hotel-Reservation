@@ -1231,6 +1231,7 @@ public class HotelView extends JFrame
          { 
             //add our code to cancel reservation
             System.out.println("No button clicked");
+            hotel.confirmReservations();
             panelContainer.add(chooseReceiptCard(), "chooseReceiptCard");
             cards.show(panelContainer, "chooseReceiptCard");
          } 
