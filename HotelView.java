@@ -1200,6 +1200,7 @@ public class HotelView extends JFrame
                if (!flag && userName.getText().equals("manager"))
                {
                   hotel.createAccount(true, "manager", "manager", password.getText());
+                  cards.show(panelContainer, "managerViewCard");
                }
                else if (flag && !userName.getText().equals("manager"))
                {
@@ -1217,6 +1218,7 @@ public class HotelView extends JFrame
                {
                   hotel.deleteAccount("manager");
                   hotel.createAccount(true, "manager", "manager", password.getText());
+                  cards.show(panelContainer, "managerViewCard");
                }
             }
          }
@@ -1392,8 +1394,8 @@ public class HotelView extends JFrame
             {
                // Login Button Pushed. Check Password
                System.out.println("Password: " + userPwdText.getText());
-              // if (hotel.login("manager", userPwdText.getText()))
-              if (userPwdText.getText().equals("123"))
+              if (hotel.login("manager", userPwdText.getText()))
+              // if (userPwdText.getText().equals())
                {
                   System.out.println("Login successful");
                      
