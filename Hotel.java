@@ -223,4 +223,9 @@ public class Hotel implements Serializable
    {
        currentReservations.add(aReservation);
    }
+   
+   public void clearCurrentReservations()
+   {
+      currentReservations = new ArrayList<Reservation>();
+   }
 }
