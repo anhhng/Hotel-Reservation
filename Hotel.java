@@ -122,6 +122,13 @@ public class Hotel implements Serializable
       accounts.add(new Account(isManager, name, username, aPassword));
    }
    
+   public void deleteAccount(String username)
+   {
+      for (int i = accounts.size() - 1; i >= 0; i--)
+         if (accounts.get(i).getUsername() == username)
+            accounts.remove(i);
+   }
+   
    public void createReceipt()
    {
       if (currentAccount != null)

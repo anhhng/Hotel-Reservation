@@ -56,7 +56,7 @@ public class HotelView extends JFrame
       panelContainer.add(loginCard(), "loginCard");
       panelContainer.add(guestLoginCard(), "guestLoginCard");
       panelContainer.add(managerLoginCard(), "managerLoginCard");
-      panelContainer.add(managerViewCard(), "managerView");
+      panelContainer.add(managerViewCard(), "managerViewCard");
       cards.first(panelContainer);
       
       add(panelContainer);
@@ -1184,9 +1184,7 @@ public class HotelView extends JFrame
       {
          public void actionPerformed(ActionEvent e)
          {
-            // to create manager
-            if (userName.getText().equals("manager"))
-               hotel.createAccount(true, "manager", "manager", password.getText());
+            
             boolean flag = false;
             if (!password.getText().equals(confirmPass.getText()))
                messageLabel.setText("Passwords don't match");
@@ -1199,7 +1197,11 @@ public class HotelView extends JFrame
                      flag = true;
                   }
                }
-               if (flag && !userName.getText().equals("manager"))
+               if (!flag && userName.getText().equals("manager"))
+               {
+                  hotel.createAccount(true, "manager", "manager", password.getText());
+               }
+               else if (flag && !userName.getText().equals("manager"))
                {
                   messageLabel.setText("Username already taken");
                }
@@ -1210,6 +1212,11 @@ public class HotelView extends JFrame
                   panelContainer.add(guestOptionsCard(), "guestOptionsCard");
                   cards.show(panelContainer, "guestOptionsCard");
                   panelContainer.add(newAccountCard(), "newAccountCard");
+               }
+               else
+               {
+                  hotel.deleteAccount("manager");
+                  hotel.createAccount(true, "manager", "manager", password.getText());
                }
             }
          }
@@ -1392,7 +1399,7 @@ public class HotelView extends JFrame
                      
                   // Show manager view card
                   userPwdText.setText(null);
-                  cards.show(panelContainer, "ManagerView");
+                  cards.show(panelContainer, "managerViewCard");
                } 
                else 
                {
