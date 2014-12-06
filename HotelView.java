@@ -831,7 +831,6 @@ public class HotelView extends JFrame
      */
     private JPanel makeReservationCard()
     {
-       hotel.clearCurrentReservations();
        ReservationView view = new ReservationView();
        ReservationModel model = new ReservationModel(hotel);
        ReservationController controller = new ReservationController(model, view);
@@ -893,6 +892,7 @@ public class HotelView extends JFrame
       {
          public void actionPerformed(ActionEvent e)
          {
+            hotel.clearCurrentReservations();
             panelContainer.add(makeReservationCard(), "makeReservationCard");
             cards.show(panelContainer, "makeReservationCard");
          }
@@ -1125,15 +1125,20 @@ public class HotelView extends JFrame
             System.out.println("Confirmed cancelling reservation");
             ArrayList<Integer> numbers = 
                     hotel.getCurrentAccount().getReservationNumbers();
-            for (Room room: hotel.getRooms())
-            {
-               
-            }
             for (int i = indexes.length - 1; i >= 0; i--)
             {
                System.out.println("Index: " + i + "  Number: " + numbers.get(i) + "  Delete: " + indexes[i]);
                if (indexes[i])
                {
+                  for (int j = 0; j < hotel.getRooms().size(); j++)
+                  {
+                     Room room = hotel.getRooms().get(j);
+                     for (int k = room.getReservations().size() - 1; k >= 0; k--)
+                     {
+                        if (room.getReservations().get(k) == numbers.get(i))
+                           room.removeReservationNumber(numbers.get(i));
+                     }
+                  }
                   hotel.cancelReservation(numbers.get(i));
                   hotel.getCurrentAccount().removeReservation(numbers.get(i));
                }
