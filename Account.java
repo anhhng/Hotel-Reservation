@@ -106,7 +106,7 @@ public class Account implements Serializable
    */
    public void removeReservation(int reservationNumber)
    {
-      for (int i = 0; i < reservations.size(); i++)
+      for (int i = reservations.size() - 1; i >= 0; i--)
          if (reservationNumber == reservations.get(i))
             reservations.remove(i);
    }
