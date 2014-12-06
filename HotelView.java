@@ -54,7 +54,7 @@ public class HotelView extends JFrame
       panelContainer.add(loginCard(), "loginCard");
       panelContainer.add(guestLoginCard(), "guestLoginCard");
       panelContainer.add(managerLoginCard(), "managerLoginCard");
-      
+      panelContainer.add(ManagerViewCard(), "ManagerView");
       cards.first(panelContainer);
       
       add(panelContainer);
@@ -1370,14 +1370,15 @@ public class HotelView extends JFrame
             public void actionPerformed(ActionEvent e)
             {
                // Login Button Pushed. Check Password
-               System.out.println("   Passwd: " + userPwdText.getText());
-               if (hotel.login("manager", userPwdText.getText()))
+               System.out.println("Password: " + userPwdText.getText());
+              // if (hotel.login("manager", userPwdText.getText()))
+              if (userPwdText.getText().equals("123"))
                {
                   System.out.println("Login successful");
                      
                   // Show manager view card
                   userPwdText.setText(null);
-                  cards.show(panelContainer, "managerViewCard");
+                  cards.show(panelContainer, "ManagerView");
                } 
                else 
                {
@@ -1401,4 +1402,132 @@ public class HotelView extends JFrame
 
       return panel;
    }
+public JPanel ManagerViewCard() 
+{
+		Room reserveRoom;
+		CalendarGUI cal = new CalendarGUI();
+
+		JLabel AvaRoomLabel = new JLabel("Available Rooms");
+		JLabel ResRoomLabel = new JLabel("Reserved Rooms");
+		JLabel emptyLabel = new JLabel("        ");
+		JLabel blankLabel = new JLabel("");
+		JButton Quitbutton = new JButton("Quit");
+		JButton BackButton = new JButton("Go back");
+
+		JTextArea screen1 = new JTextArea(8,8);
+		JTextArea screen2 = new JTextArea(8,8);
+
+		JPanel CombinedPanel = new JPanel();
+		JPanel  GeneralPanel = new JPanel();
+		JPanel panel1 = new JPanel();
+
+		panel1.setLayout(new BorderLayout());
+		panel1.add(AvaRoomLabel, BorderLayout.WEST);
+		panel1.add(ResRoomLabel, BorderLayout.EAST);
+		panel1.add(emptyLabel, BorderLayout.CENTER);
+		GeneralPanel.setLayout(new BorderLayout());
+		GeneralPanel.add(panel1, BorderLayout.NORTH);
+		// JTextArea is included in JScrollPane
+		JScrollPane sp = new JScrollPane(screen1);
+		JScrollPane sp2 = new JScrollPane(screen2);
+		//add content of ScrollPane to panel
+		GeneralPanel.add(getContentPane().add(sp), BorderLayout.WEST);
+		GeneralPanel.add(blankLabel, BorderLayout.CENTER);
+		GeneralPanel.add(getContentPane().add(sp2), BorderLayout.EAST);
+
+
+
+		ArrayList<Room> rooms = hotel.getRooms();
+		ArrayList<String> roomList = new ArrayList<String>();
+		//Convert String to Date
+		String astring = cal.getDatePicked();
+		DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+		Date DatePicked = null;
+		try {
+			DatePicked = df.parse(astring);
+			
+		} catch (ParseException e1) {
+			System.out.println("bad converted date");
+			e1.printStackTrace();
+		}
+		reserveRoom = null;
+		for (Room room: rooms)
+		{
+			boolean available = true;
+		
+						ArrayList<Integer> reservations = room.getReservations();
+						for (Integer reservationNumber: reservations)
+						{
+							// room reservation from reservation number
+							Reservation reservation = hotel.getReservation(reservationNumber);
+
+							// room reservation start and end date
+							Date startDate = reservation.getArrivalDate().getTime();
+							Date endDate = reservation.getDepartDate().getTime();
+
+							// Check if the room is reserved or not
+							if ((ReservationStartDate.getTime() <= DatePicked.getTime() &&
+									ReservationEndDate.getTime() >= DatePicked.getTime()))							
+							{
+								ArrayList<Reservation> reserved = new ArrayList<Reservation>();
+
+								for (int i = 0; i < reserved.size(); i++)
+								{
+
+									Reservation r = reserved.get(i);
+									String info = String.format("", r.getRoomNumber());
+									screen2.append(info);
+								}
+								// no available
+								available = false;
+								break;
+							}
+						}
+
+						if (available == true)
+						{
+							// room available add room
+							reserveRoom = room;
+							roomList.add("   #" + String.valueOf(room.getRoomNumber()) + "\n");
+							for(String list: roomList)
+							{
+								screen1.append(list);
+							}
+						}
+					
+		}
+
+
+		Quitbutton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				System.out.println("Quit");
+				System.exit(0);
+			}
+		});
+
+		BackButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				System.out.println("Back button");
+				cards.show(panelContainer, "loginCard");
+			}
+		});
+		JPanel panel2 = new JPanel();
+		panel2.add(BackButton);
+		panel2.add(Quitbutton);
+		
+		CombinedPanel.setLayout(new BorderLayout());
+		CombinedPanel.add(cal, BorderLayout.WEST);
+		CombinedPanel.add(blankLabel, BorderLayout.CENTER);
+		CombinedPanel.add(GeneralPanel, BorderLayout.EAST);
+		CombinedPanel.add(panel2, BorderLayout.SOUTH);
+
+		this.add(CombinedPanel);
+		this.setSize(new Dimension(WIDTH, HEIGHT));
+		return CombinedPanel;
+	}   
+   
 }
