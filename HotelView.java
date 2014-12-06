@@ -56,7 +56,7 @@ public class HotelView extends JFrame
       panelContainer.add(loginCard(), "loginCard");
       panelContainer.add(guestLoginCard(), "guestLoginCard");
       panelContainer.add(managerLoginCard(), "managerLoginCard");
-      panelContainer.add(ManagerViewCard(), "ManagerView");
+      panelContainer.add(managerViewCard(), "managerView");
       cards.first(panelContainer);
       
       add(panelContainer);
@@ -1417,7 +1417,7 @@ public class HotelView extends JFrame
       return panel;
    }
    
-   public JPanel ManagerViewCard() 
+   private JPanel managerViewCard() 
    {
       Room reserveRoom;
       CalendarGUI cal = new CalendarGUI();
