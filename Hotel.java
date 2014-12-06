@@ -112,9 +112,13 @@ public class Hotel implements Serializable
    
    public void cancelReservation(int reservationNumber)
    {
+      System.out.println(reservations);
       for (int i = reservations.size() - 1; i >= 0; i--)
          if (reservations.get(i).getReservationNumber() == reservationNumber)
+         {
+            System.out.println(reservations.get(i));
             reservations.remove(i);
+         }
    }
    
    public void createAccount(boolean isManager, String name, String username, String aPassword)

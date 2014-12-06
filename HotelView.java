@@ -927,12 +927,12 @@ public class HotelView extends JFrame
    {
       
       JPanel panel = new JPanel();
-      if (hotel.getCurrentAccount() == null)
-         return panel;
+      
       ArrayList<Reservation> reservations = new ArrayList<Reservation>();
       if (hotel.getCurrentAccount().getNumberOfReservations() != 0)
       {
-         ArrayList<Integer> numbers = hotel.getCurrentAccount().getReservationNumbers();
+         ArrayList<Integer> numbers = 
+                 hotel.getCurrentAccount().getReservationNumbers();
          for (int i: numbers)
          {
             for (Reservation r: hotel.getReservations())
@@ -941,7 +941,6 @@ public class HotelView extends JFrame
          }
       }
       final boolean[] indexes = new boolean[reservations.size()];
-      //panel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
       
       JPanel topPanel = new JPanel();
       topPanel.setPreferredSize(new Dimension(WIDTH, SECTION_HEIGHT * 2));
@@ -962,7 +961,6 @@ public class HotelView extends JFrame
       
       JPanel reservationInfo = new JPanel();
       reservationInfo.setLayout(new BoxLayout(reservationInfo, BoxLayout.Y_AXIS));
-      //reservationInfo.setPreferredSize(new Dimension(WIDTH, SECTION_HEIGHT));
       JLabel header = new JLabel(String.format(" Reservation  Room      From                 To                 Total Cost"));
       reservationInfo.add(header);
       for (int i = 0; i < reservations.size(); i++)
@@ -1009,10 +1007,8 @@ public class HotelView extends JFrame
       buttonPanel.setPreferredSize(new Dimension(WIDTH, SECTION_HEIGHT));
       buttonPanel.add(confirmButton);
       buttonPanel.add(backButton);
-      //buttonPanel.add(cancelButton);
       confirmButton.setLocation(WIDTH, SECTION_HEIGHT * 3);
       backButton.setLocation(WIDTH / 2, SECTION_HEIGHT * 3);
-      //cancelButton.setLocation(WIDTH * 2 / 3, SECTION_HEIGHT * 3);
       panel.add(buttonPanel, BorderLayout.SOUTH);
       
       return panel;
@@ -1043,7 +1039,6 @@ public class HotelView extends JFrame
       
       JPanel reservationInfo = new JPanel();
       reservationInfo.setLayout(new BoxLayout(reservationInfo, BoxLayout.Y_AXIS));
-      //reservationInfo.setPreferredSize(new Dimension(WIDTH, SECTION_HEIGHT));
       JLabel info = new JLabel("Reservation #" + r.getReservationNumber());
       JLabel info2 = new JLabel("Room #" + r.getRoomNumber());
       JLabel info3 = new JLabel("From " + r.printStartDate() + " to " + r.printEndDate());
@@ -1134,8 +1129,8 @@ public class HotelView extends JFrame
                System.out.println("Index: " + i + "  Number: " + numbers.get(i) + "  Delete: " + indexes[i]);
                if (indexes[i])
                {
-                  hotel.getCurrentAccount().removeReservation(numbers.get(i));
                   hotel.cancelReservation(numbers.get(i));
+                  hotel.getCurrentAccount().removeReservation(numbers.get(i));
                }
             }
             panelContainer.add(showReservationsCard(), "showReservationsCard");
