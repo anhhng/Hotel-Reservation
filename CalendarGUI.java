@@ -30,6 +30,7 @@ import javax.swing.event.ChangeListener;
 
 public class CalendarGUI extends JPanel
 {
+   private HotelView view;
 	/** The currently-interesting year (not modulo 1900!) */
 	protected int yy;
 
@@ -53,7 +54,7 @@ public class CalendarGUI extends JPanel
 	/** Today's month */
 	protected final int thisMonth = calendar.get(Calendar.MONTH);
 	/** picked date from calendar */
-	String datepicked;
+	private String datepicked;
 
 	/** One of the buttons. We just keep its reference for getBackground(). */
 	private JLabel b0;
@@ -67,7 +68,7 @@ public class CalendarGUI extends JPanel
 	/**
 	 * Construct a Cal, starting with today.
 	 */
-	CalendarGUI()
+	CalendarGUI(HotelView aView)
 	{
 		super();
 		setYYMMDD(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
@@ -75,6 +76,7 @@ public class CalendarGUI extends JPanel
 		buildGUI();
 		//recompute();
 		printCalendarMonthYear();
+                view = aView;
 
 	}
 
@@ -202,6 +204,7 @@ public class CalendarGUI extends JPanel
 						String picked = labs[col][row].getText();
 						datepicked = Integer.toString(mm+1) +"/" + picked+ "/"+ Integer.toString(yy);
 						System.out.println(datepicked);
+                                                view.updateManagerView();
 					}
 				});
 
