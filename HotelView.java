@@ -1019,7 +1019,7 @@ public class HotelView extends JFrame
    @param indexes an array of booleans, true if a reservation is to be cancelled
    @return JPanel for cancellation page
    */
-   private JPanel confirmCancellationCard(boolean[] indexes)
+   private JPanel confirmCancellationCard(final boolean[] indexes)
    {
       JPanel panel = new JPanel();
 		
