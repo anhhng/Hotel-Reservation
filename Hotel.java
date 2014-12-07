@@ -240,7 +240,8 @@ public class Hotel implements Serializable
       for (Reservation r: reservations)
       {
          if (date.after(r.getArrivalDate().getTime()) && 
-                 date.before(r.getDepartDate().getTime()))
+                 date.before(r.getDepartDate().getTime()) ||
+                 date.equals(r.getArrivalDate().getTime()))
          {
             for (int i = 0; i < rooms.size(); i++)
             {
@@ -270,7 +271,9 @@ public class Hotel implements Serializable
                  (end.after(r.getArrivalDate().getTime()) && 
                  end.before(r.getDepartDate().getTime())) ||
                  (start.before(r.getArrivalDate().getTime()) &&
-                 end.after(r.getDepartDate().getTime())))
+                 end.after(r.getDepartDate().getTime())) ||
+                 start.equals(r.getArrivalDate().getTime()) ||
+                 end.equals(r.getDepartDate().getTime()))
          {
             for (int i = 0; i < rooms.size(); i++)
             {
@@ -289,7 +292,9 @@ public class Hotel implements Serializable
                  (end.after(r.getArrivalDate().getTime()) && 
                  end.before(r.getDepartDate().getTime())) ||
                  (start.before(r.getArrivalDate().getTime()) &&
-                 end.after(r.getDepartDate().getTime())))
+                 end.after(r.getDepartDate().getTime())) ||
+                 start.equals(r.getArrivalDate().getTime()) ||
+                 end.equals(r.getDepartDate().getTime()))
          {
             for (int i = 0; i < rooms.size(); i++)
             {
