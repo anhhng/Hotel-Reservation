@@ -245,7 +245,7 @@ public class Hotel implements Serializable
          if (start.after(r.getArrivalDate().getTime()) && 
                  end.before(r.getDepartDate().getTime()))
          {
-            //System.out.println("fits");
+            System.out.println("fits");
             for (int i = 0; i < rooms.size(); i++)
             {
                if (r.getRoomNumber() == rooms.get(i).getRoomNumber())

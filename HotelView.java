@@ -607,7 +607,20 @@ public class HotelView extends JFrame
             // Make array rooms available
             ArrayList<Room> rooms = hotel.getRooms();
             reserveRoom = null;
-            for (Room room: rooms)
+            boolean[] available = hotel.checkAvailability(ReservationStartDate, 
+                    ReservationEndDate);
+            System.out.println(ReservationStartDate);
+            System.out.println(ReservationEndDate);
+            for (int i = 0; i < available.length; i++)
+            {
+               System.out.println(i + ": " + available[i]);
+               if (available[i] && rooms.get(i).isLuxury() == luxury)
+               {
+                  roomList.add("#" + rooms.get(i).getRoomNumber() + "\n");
+                  reserveRoom = rooms.get(i);
+               }
+            }
+            /*for (Room room: rooms)
             {
                 boolean available = true;
                 
@@ -618,6 +631,8 @@ public class HotelView extends JFrame
                     {
                         // room reservation from reservation number
                         Reservation reservation = hotel.getReservation(reservationNumber);
+			if (reservation == null)
+                            break;
                         
                         // room reservation start and end date
                         Date startDate = reservation.getArrivalDate().getTime();
@@ -642,7 +657,7 @@ public class HotelView extends JFrame
                         roomList.add("   #" + String.valueOf(room.getRoomNumber()) + "\n");
                     }
                 }
-            }
+            }*/
             
             NoConfirmation = false;
             
@@ -748,7 +763,8 @@ public class HotelView extends JFrame
            this.view.addTransactionDoneListener(new ActionListener () {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    panelContainer.add(chooseReceiptCard(),"chooseReceiptCard");
+		    hotel.confirmReservations();
+		    panelContainer.add(chooseReceiptCard(),"chooseReceiptCard");
                     cards.show(panelContainer,"chooseReceiptCard");
                 }}
            );

@@ -295,6 +295,7 @@ public class CalendarGUI extends JPanel
 			labs[0][day].setText("");
 		}
 		// display the days of month
+                labs[0][0].setText("");
 		for (int day = 1; day <= numberOfMonthDays; day++)
 		{
 			int column = (firstWeekdayOfMonth + day -1)/7;
