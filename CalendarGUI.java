@@ -199,48 +199,51 @@ public class CalendarGUI extends JPanel
 					public void mouseClicked(MouseEvent e)
 					{
 						String picked = labs[col][row].getText();
-						//get the day picked as a String
-						datepicked = Integer.toString(mm+1) + "/" + picked+ "/"+ Integer.toString(yy);
-						int month;
-						int day;
-						int year;
-						//check if datepicked is format MM//dd/yyyy or not
-						if (datepicked.charAt(1) == '/')
-						{
-							month = Integer.parseInt(datepicked.substring(0,1));
-							if (datepicked.charAt(3) == '/')
-							{
-								day = Integer.parseInt(datepicked.substring(2,3));
-								year = Integer.parseInt(datepicked.substring(4,8));
-							}
-							else
-							{
-								day = Integer.parseInt(datepicked.substring(2,4));
-								year = Integer.parseInt(datepicked.substring(5,9));
-							}
-						}
-						else
-						{
-							month = Integer.parseInt(datepicked.substring(0,2));
-							if (datepicked.charAt(4) == '/')
-							{
-								day = Integer.parseInt(datepicked.substring(3,4));
-								year = Integer.parseInt(datepicked.substring(5,9));
-							}
-							else
-							{
-								day = Integer.parseInt(datepicked.substring(3,5));
-								year = Integer.parseInt(datepicked.substring(6,10));
-							}
-						}
-						//get current date as Date type
-						//and pass it to updateManagerView method
-						Calendar tempCal = Calendar.getInstance();
-						tempCal.set(Calendar.YEAR, year);
-						tempCal.set(Calendar.MONTH, month - 1);
-						tempCal.set(Calendar.DATE, day);
-						Date date = tempCal.getTime();
-						view.updateManagerView(date);
+                                                if (!picked.equals(""))
+                                                {
+                                                   //get the day picked as a String
+                                                   datepicked = Integer.toString(mm+1) + "/" + picked+ "/"+ Integer.toString(yy);
+                                                   int month;
+                                                   int day;
+                                                   int year;
+                                                   //check if datepicked is format MM//dd/yyyy or not
+                                                   if (datepicked.charAt(1) == '/')
+                                                   {
+                                                           month = Integer.parseInt(datepicked.substring(0,1));
+                                                           if (datepicked.charAt(3) == '/')
+                                                           {
+                                                                   day = Integer.parseInt(datepicked.substring(2,3));
+                                                                   year = Integer.parseInt(datepicked.substring(4,8));
+                                                           }
+                                                           else
+                                                           {
+                                                                   day = Integer.parseInt(datepicked.substring(2,4));
+                                                                   year = Integer.parseInt(datepicked.substring(5,9));
+                                                           }
+                                                   }
+                                                   else
+                                                   {
+                                                           month = Integer.parseInt(datepicked.substring(0,2));
+                                                           if (datepicked.charAt(4) == '/')
+                                                           {
+                                                                   day = Integer.parseInt(datepicked.substring(3,4));
+                                                                   year = Integer.parseInt(datepicked.substring(5,9));
+                                                           }
+                                                           else
+                                                           {
+                                                                   day = Integer.parseInt(datepicked.substring(3,5));
+                                                                   year = Integer.parseInt(datepicked.substring(6,10));
+                                                           }
+                                                   }
+                                                   //get current date as Date type
+                                                   //and pass it to updateManagerView method
+                                                   Calendar tempCal = Calendar.getInstance();
+                                                   tempCal.set(Calendar.YEAR, year);
+                                                   tempCal.set(Calendar.MONTH, month - 1);
+                                                   tempCal.set(Calendar.DATE, day);
+                                                   Date date = tempCal.getTime();
+                                                   view.updateManagerView(date);
+                                                }
 					}
 				});
 
