@@ -1,3 +1,8 @@
+/**
+HotelView class for Group Project
+@author David Delgado, Anh Nguyen, Daniel Nguyen
+*/
+
 package projecttester;
 
 import java.awt.BorderLayout;
@@ -33,6 +38,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.event.MouseInputAdapter;
 
+/**
+Creates and manages GUI
+*/
 public class HotelView extends JFrame
 {
    private static final int WIDTH = 510;
@@ -49,6 +57,10 @@ public class HotelView extends JFrame
    private JTextArea managerReserved;
    private JTextArea managerAvailable;
            
+   /**
+   Constructs HotelView object to display hotel reservation interface
+   @param aHotel hotel that contains reservation data
+   */
    public HotelView(Hotel aHotel)
    {
       hotel = aHotel;
@@ -67,6 +79,10 @@ public class HotelView extends JFrame
       setTitle("Hotel Reservation");
    }
    
+   /**
+   Creates main login GUI page
+   @return login GUI JPanel
+   */
    private JPanel loginCard()
    {
       JPanel panel = new JPanel();
@@ -132,7 +148,10 @@ public class HotelView extends JFrame
          });
       return panel;
    }
-   
+   /**
+   Creates guest login page
+   @return guest login GUI JPanel
+   */
    private JPanel guestLoginCard()
    {
        // create login frame
@@ -240,6 +259,9 @@ public class HotelView extends JFrame
       return guestLoginCard;
    }
 
+   /**
+   View for MVC in making a reservation
+   */
    class ReservationView extends JPanel
    {
         final JTextField checkinDateText; // checkin date text box
@@ -468,7 +490,9 @@ public class HotelView extends JFrame
         }
     }
     
-    
+    /**
+   Model for MVC in making a reservation
+   */
     class ReservationModel
     {
         String checkinDate;
@@ -653,6 +677,9 @@ public class HotelView extends JFrame
         }
     }
        
+    /**
+    Controller for MVC in making a reservation
+    */
     class ReservationController
     {
        ReservationModel model;
@@ -804,6 +831,10 @@ public class HotelView extends JFrame
        return view;
     }
 
+    /**
+    Creates guestOptions gui page
+    @return guest options JPanel
+    */
    private JPanel guestOptionsCard()
    {
       if (hotel.getCurrentAccount() == null)
@@ -891,6 +922,10 @@ public class HotelView extends JFrame
       return panel;
    }
    
+   /**
+   Creates the gui to show a guest's reservations, allows cancelling reservation
+   @return JPanel to view/cancel reservations
+   */
    private JPanel showReservationsCard()
    {
       
@@ -979,85 +1014,11 @@ public class HotelView extends JFrame
       return panel;
    }
    
-   private JPanel confirmationCard(Reservation reservation)
-   {    
-      JPanel panel = new JPanel();
-      final Reservation r = reservation;
-      //panel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-      
-      JPanel topPanel = new JPanel();
-      topPanel.setPreferredSize(new Dimension(WIDTH, SECTION_HEIGHT * 2));
-      topPanel.setLayout(new BorderLayout());
-      panel.add(topPanel, BorderLayout.NORTH);
-      
-      JPanel blankPanel = new JPanel();
-      blankPanel.setPreferredSize(new Dimension(WIDTH, SECTION_HEIGHT));
-      topPanel.add(blankPanel, BorderLayout.NORTH);
-      
-      JPanel headPanel = new JPanel();
-      headPanel.setPreferredSize(new Dimension(WIDTH, SECTION_HEIGHT));
-      topPanel.add(headPanel);
-      
-      JLabel headLabel = new JLabel("Confirm Reservation?");
-      headLabel.setPreferredSize(new Dimension(WIDTH - BORDER_OFFSET, SECTION_HEIGHT));
-      headPanel.add(headLabel);
-      
-      JPanel reservationInfo = new JPanel();
-      reservationInfo.setLayout(new BoxLayout(reservationInfo, BoxLayout.Y_AXIS));
-      JLabel info = new JLabel("Reservation #" + r.getReservationNumber());
-      JLabel info2 = new JLabel("Room #" + r.getRoomNumber());
-      JLabel info3 = new JLabel("From " + r.printStartDate() + " to " + r.printEndDate());
-      JLabel info4 = new JLabel("Total Cost: $" + String.format("%.2f", r.getCost()));
-      info.setPreferredSize(new Dimension(WIDTH - BORDER_OFFSET, TEXT_HEIGHT));
-      info2.setPreferredSize(new Dimension(WIDTH - BORDER_OFFSET, TEXT_HEIGHT));
-      info3.setPreferredSize(new Dimension(WIDTH - BORDER_OFFSET, TEXT_HEIGHT));
-      info4.setPreferredSize(new Dimension(WIDTH - BORDER_OFFSET, TEXT_HEIGHT));
-      reservationInfo.add(info);
-      reservationInfo.add(info2);
-      reservationInfo.add(info3);
-      reservationInfo.add(info4);
-      panel.add(reservationInfo, BorderLayout.CENTER);
-      
-      JPanel buttonPanel = new JPanel();
-      JButton confirmButton = new JButton("Confirm");
-      confirmButton.addActionListener(new ActionListener()
-      {
-         public void actionPerformed(ActionEvent e)
-         {
-            hotel.makeReservation(r.getArrivalDate(), r.getDepartDate(), 
-                    r.getAcctID(), r.getGuestName(), r.getRoomNumber(), 
-                    r.getCostPerDay());
-            cards.show(panelContainer, "makeAnotherCard");
-         }
-      });
-      JButton backButton = new JButton("Go back");
-      backButton.addActionListener(new ActionListener()
-      {
-         public void actionPerformed(ActionEvent e)
-         {
-            cards.show(panelContainer, "makeReservationCard");
-         }
-      });
-      JButton cancelButton = new JButton("Cancel");
-      cancelButton.addActionListener(new ActionListener()
-      {
-         public void actionPerformed(ActionEvent e)
-         {
-            cards.show(panelContainer, "guestOptionsCard");
-         }
-      });
-      buttonPanel.setPreferredSize(new Dimension(WIDTH, SECTION_HEIGHT));
-      buttonPanel.add(confirmButton);
-      buttonPanel.add(backButton);
-      buttonPanel.add(cancelButton);
-      confirmButton.setLocation(WIDTH, SECTION_HEIGHT * 3);
-      backButton.setLocation(WIDTH / 3, SECTION_HEIGHT * 3);
-      cancelButton.setLocation(WIDTH * 2 / 3, SECTION_HEIGHT * 3);
-      panel.add(buttonPanel, BorderLayout.SOUTH);
-      
-      return panel;
-   }
-   
+   /**
+   Creates gui to confirm a cancellation of reservations
+   @param indexes an array of booleans, true if a reservation is to be cancelled
+   @return JPanel for cancellation page
+   */
    private JPanel confirmCancellationCard(boolean[] indexes)
    {
       JPanel panel = new JPanel();
@@ -1112,6 +1073,10 @@ public class HotelView extends JFrame
       return panel;
    }
    
+   /**
+   Creates new account creation gui page
+   @return JPanel for creating a new account
+   */
    private JPanel newAccountCard()
    {
       JPanel panel = new JPanel();
@@ -1200,6 +1165,10 @@ public class HotelView extends JFrame
       return panel;
    }
    
+   /**
+   Creates gui that asks if the guest wants to make another reservation
+   @return JPanel to check for making another reservation
+   */
    private JPanel makeAnotherCard()
    {
       JPanel panel = new JPanel();
@@ -1238,6 +1207,10 @@ public class HotelView extends JFrame
       return panel;
    }
    
+   /**
+   Creates gui to choose type of receipt
+   @return JPanel for receipt choice
+   */
    private JPanel chooseReceiptCard()
    {
       JPanel panel = new JPanel();
@@ -1278,6 +1251,10 @@ public class HotelView extends JFrame
       return panel;
    }
    
+   /**
+   Creates GUI that displays a receipt
+   @return JPanel that shows receipt
+   */
    private JPanel receiptCard()
    {
       JPanel panel = new JPanel();
@@ -1302,6 +1279,10 @@ public class HotelView extends JFrame
       return panel;
    }
    
+   /**
+   Creates GUI for manager to login
+   @return JPanel for manager login
+   */
    private JPanel managerLoginCard()
    {
       JPanel panel = new JPanel();
@@ -1383,6 +1364,10 @@ public class HotelView extends JFrame
       return panel;
    }
    
+   /**
+   Creates GUI for manager view
+   @return manager view JPanel
+   */
    public JPanel managerViewCard() 
    {
       Room reserveRoom;
@@ -1455,6 +1440,11 @@ public class HotelView extends JFrame
       return CombinedPanel;
    }   
    
+   /**
+   Updates manager view to reflect reservations of a specified date
+   @param date the date to check reservations
+   postcondition: managerViewCard will show available and reserved rooms
+   */
    public void updateManagerView(Date date)
    {
       JTextArea screen1 = managerAvailable;
