@@ -1494,10 +1494,11 @@ public class HotelView extends JFrame
             // room reservation start and end date
             Date startDate = reservation.getArrivalDate().getTime();
             Date endDate = reservation.getDepartDate().getTime();
-
-            // Check if the room is reserved or not
-            if ((ReservationStartDate.getTime() <= DatePicked.getTime() &&
-                     ReservationEndDate.getTime() >= DatePicked.getTime()))							
+         
+      
+			// Check if the room is reserved or not
+            if (( DatePicked.after(startDate) &&
+                   DatePicked.before(endDate)))							
             {
                ArrayList<Reservation> reserved = new ArrayList<Reservation>();
 
@@ -1507,23 +1508,26 @@ public class HotelView extends JFrame
                   String info = String.format("", r.getRoomNumber());
                   screen2.append(info);
                }
-               // no available
-               available = false;
-               break;
+            
             }
-         }
-
-         if (available == true)
-         {
-            // room available add room
-            reserveRoom = room;
-            roomList.add("   #" + String.valueOf(room.getRoomNumber()) + "\n");
-            for(String list: roomList)
+            else
             {
-               screen1.append(list);
+           	 for (Room room2: rooms)
+                {
+               // room available add room
+               reserveRoom = room2;
+               roomList.add("#" + String.valueOf(room2.getRoomNumber()) + "\n");
+               for(String list: roomList)
+               {
+                  screen1.append(list);
+               }
+                }
             }
          }
       }
+
+        
+      
 
       Quitbutton.addActionListener(new ActionListener()
       {
