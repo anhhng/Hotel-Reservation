@@ -191,31 +191,62 @@ public class CalendarGUI extends JPanel
 		for (int i = 0; i < 6; i++)
 			for (int j = 0; j < 7; j++)
 			{
-				bp.add(labs[i][j] = new JLabel(""));
-				final int col = i;
-				final int row = j;
-				datepicked = calendar.get(Calendar.MONTH)+1 +"/" + calendar.get(Calendar.DAY_OF_MONTH)+
-						"/"+ calendar.get(Calendar.YEAR);
-				labs[i][j].addMouseListener(new MouseAdapter()
-				{
+                          bp.add(labs[i][j] = new JLabel(""));
+                          final int col = i;
+                          final int row = j;
+                          datepicked = calendar.get(Calendar.MONTH)+1 +"/" + calendar.get(Calendar.DAY_OF_MONTH)+
+                                          "/"+ calendar.get(Calendar.YEAR);
+                          labs[i][j].addMouseListener(new MouseAdapter()
+                          {
 
-					public void mouseClicked(MouseEvent e)
-					{
-						String picked = labs[col][row].getText();
-						datepicked = Integer.toString(mm+1) +"/" + picked+ "/"+ Integer.toString(yy);
-						System.out.println(datepicked);
-                                                view.updateManagerView();
-					}
-				});
+                            public void mouseClicked(MouseEvent e)
+                            {
+                                    String picked = labs[col][row].getText();
+                                    datepicked = Integer.toString(mm+1) + "/" + picked+ "/"+ Integer.toString(yy);
+                                    int month;
+                                    int day;
+                                    int year;
+                                    if (datepicked.charAt(1) == '/')
+                                    {
+                                       month = Integer.parseInt(datepicked.substring(0,1));
+                                       if (datepicked.charAt(3) == '/')
+                                       {
+                                          day = Integer.parseInt(datepicked.substring(2,3));
+                                          year = Integer.parseInt(datepicked.substring(4,8));
+                                       }
+                                       else
+                                       {
+                                          day = Integer.parseInt(datepicked.substring(2,4));
+                                          year = Integer.parseInt(datepicked.substring(5,9));
+                                       }
+                                    }
+                                    else
+                                    {
+                                       month = Integer.parseInt(datepicked.substring(0,2));
+                                       if (datepicked.charAt(4) == '/')
+                                       {
+                                          day = Integer.parseInt(datepicked.substring(3,4));
+                                          year = Integer.parseInt(datepicked.substring(5,9));
+                                       }
+                                       else
+                                       {
+                                          day = Integer.parseInt(datepicked.substring(3,5));
+                                          year = Integer.parseInt(datepicked.substring(6,10));
+                                       }
+                                    }
+                                    Calendar tempCal = Calendar.getInstance();
+                                    tempCal.set(Calendar.YEAR, year);
+                                    tempCal.set(Calendar.MONTH, month - 1);
+                                    tempCal.set(Calendar.DATE, day);
+                                    Date date = tempCal.getTime();
+                                    view.updateManagerView(date);
+                            }
+                          });
 
 			}
 		JLabel blankLabel = new JLabel("");
 		add(blankLabel, BorderLayout.SOUTH);
 		add(bp, BorderLayout.CENTER);
-	}
-	public String getDatePicked() 
-	{ 		
-		return datepicked;
 	}
 
 

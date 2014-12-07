@@ -13,6 +13,7 @@ import static java.lang.Integer.parseInt;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 
@@ -97,9 +98,10 @@ public class Hotel implements Serializable
    }
    
    public void makeReservation(GregorianCalendar start, GregorianCalendar end, 
-           int accountID, int room, double aCostPerDay)
+           int accountID, String guestName, int room, double aCostPerDay)
    {
-      currentReservations.add(new Reservation(start, end, accountID, room, aCostPerDay));
+      currentReservations.add(new Reservation(start, end, accountID, guestName, 
+              room, aCostPerDay));
    }
    
    public void confirmReservations()
@@ -227,5 +229,47 @@ public class Hotel implements Serializable
    public void clearCurrentReservations()
    {
       currentReservations = new ArrayList<Reservation>();
+   }
+   
+   public boolean[] checkAvailability(Date start, Date end)
+   {
+      boolean[] roomsAvailable = new boolean[rooms.size()];
+      for (int i = 0; i < roomsAvailable.length; i++)
+      {
+         roomsAvailable[i] = true;
+      }
+      
+      for (Reservation r: reservations)
+      {
+
+         if (start.after(r.getArrivalDate().getTime()) && 
+                 end.before(r.getDepartDate().getTime()))
+         {
+            //System.out.println("fits");
+            for (int i = 0; i < rooms.size(); i++)
+            {
+               if (r.getRoomNumber() == rooms.get(i).getRoomNumber())
+               {
+                  roomsAvailable[i] = false;  
+               }
+            }
+         }
+      }
+      
+      return roomsAvailable;
+   }
+   
+   public ArrayList<Integer> getDatedReservations(Date date)
+   {
+      ArrayList<Integer> indexes = new ArrayList<Integer>();
+      
+      for (int i = 0; i < reservations.size(); i++)
+      {
+         if (date.after(reservations.get(i).getArrivalDate().getTime()) && 
+                 date.before(reservations.get(i).getDepartDate().getTime()))
+            indexes.add(i);           
+      }
+      
+      return indexes;
    }
 }

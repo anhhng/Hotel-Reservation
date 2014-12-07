@@ -14,6 +14,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
@@ -45,6 +46,8 @@ public class HotelView extends JFrame
    Date ReservationStartDate;
    Date ReservationEndDate;
    boolean luxuryRoom;
+   private JTextArea managerReserved;
+   private JTextArea managerAvailable;
            
    public HotelView(Hotel aHotel)
    {
@@ -103,7 +106,6 @@ public class HotelView extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)
             {
-               System.out.println("LoginCard - Guest button Pushed!");
                cards.show(panelContainer, "guestLoginCard");
             }
          });
@@ -114,7 +116,6 @@ public class HotelView extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)
             {
-               System.out.println("LoginCard - Manager button Pushed!");
                cards.show(panelContainer, "managerLoginCard");
             }
          });
@@ -125,7 +126,6 @@ public class HotelView extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)
             {
-               System.out.println("LoginCard - Quit button Pushed!");
                hotel.saveInfo();
                System.exit(0);
             }
@@ -189,13 +189,8 @@ public class HotelView extends JFrame
             public void actionPerformed(ActionEvent e)
             {
                // Login Button Pushed. Check User/Password
-               System.out.println("Login button Pushed!");
-               System.out.println("   User: " + userIdText.getText());
-               System.out.println("   Passwd: " + userPwdText.getText());
                if (hotel.login(userIdText.getText(), userPwdText.getText()))
-               {
-                  System.out.println("Login successful");
-                  
+               {                  
                   // clear user and password
                   userIdText.setText(null);
                   userPwdText.setText(null);
@@ -207,7 +202,6 @@ public class HotelView extends JFrame
                } 
                else 
                {
-                  System.out.println("Login failed");
                   userIdText.setText(null);
                   userPwdText.setText(null);
                   messageLabel.setText("Login failed");
@@ -220,9 +214,7 @@ public class HotelView extends JFrame
          {
             @Override
             public void actionPerformed(ActionEvent e)
-            {
-               System.out.println("Cancel button Pushed!");
-               
+            {               
                // clear user and password
                userIdText.setText(null);
                userPwdText.setText(null);
@@ -236,9 +228,7 @@ public class HotelView extends JFrame
          {
             @Override
             public void actionPerformed(ActionEvent e)
-            {
-               System.out.println("Create New Account button Pushed!!");
-               
+            {               
                // clear user and password
                userIdText.setText(null);
                userPwdText.setText(null);
@@ -628,8 +618,6 @@ public class HotelView extends JFrame
                     {
                         // room reservation from reservation number
                         Reservation reservation = hotel.getReservation(reservationNumber);
-			if (reservation == null)
-                            break;
                         
                         // room reservation start and end date
                         Date startDate = reservation.getArrivalDate().getTime();
@@ -674,8 +662,10 @@ public class HotelView extends JFrame
             rEnd.setTime(ReservationEndDate);
             
             // create reservation
-            Reservation reservation = new Reservation(rStart, rEnd, hotel.getCurrentAccount().getAcctID(),
-                      reserveRoom.getRoomNumber(), reserveRoom.getCostPerDay());
+            Reservation reservation = new Reservation(rStart, rEnd, 
+                    hotel.getCurrentAccount().getAcctID(),
+                      hotel.getCurrentAccount().getName(), 
+                    reserveRoom.getRoomNumber(), reserveRoom.getCostPerDay());
             
             // add reservation to hotel reservations
             hotel.addReservation(reservation);
@@ -758,8 +748,7 @@ public class HotelView extends JFrame
            this.view.addTransactionDoneListener(new ActionListener () {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-		    hotel.confirmReservations();
-		    panelContainer.add(chooseReceiptCard(),"chooseReceiptCard");
+                    panelContainer.add(chooseReceiptCard(),"chooseReceiptCard");
                     cards.show(panelContainer,"chooseReceiptCard");
                 }}
            );
@@ -981,7 +970,6 @@ public class HotelView extends JFrame
                     public void actionPerformed(ActionEvent e)
                     {
                        indexes[index] = !indexes[index];
-                       System.out.println("Toggle " + index);
                     }
                  });
          reservationInfo.add(line);
@@ -994,7 +982,6 @@ public class HotelView extends JFrame
       {
          public void actionPerformed(ActionEvent e)
          {
-            System.out.println("Confirm!!!");
             panelContainer.add(confirmCancellationCard(indexes), "confirmCancellationCard");
             cards.show(panelContainer, "confirmCancellationCard");
          }
@@ -1004,7 +991,6 @@ public class HotelView extends JFrame
       {
          public void actionPerformed(ActionEvent e)
          {
-            System.out.println("Back button");
             cards.show(panelContainer, "guestOptionsCard");
          }
       });
@@ -1064,7 +1050,8 @@ public class HotelView extends JFrame
          public void actionPerformed(ActionEvent e)
          {
             hotel.makeReservation(r.getArrivalDate(), r.getDepartDate(), 
-                    r.getAcctID(), r.getRoomNumber(), r.getCostPerDay());
+                    r.getAcctID(), r.getGuestName(), r.getRoomNumber(), 
+                    r.getCostPerDay());
             cards.show(panelContainer, "makeAnotherCard");
          }
       });
@@ -1115,7 +1102,6 @@ public class HotelView extends JFrame
          public void actionPerformed(ActionEvent arg0)
          { 
             //add our code to cancel reservation
-            System.out.println("Didn't cancel");
             panelContainer.add(showReservationsCard(), "showReservationsCard");
             cards.show(panelContainer, "showReservationsCard");
          } 
@@ -1125,12 +1111,10 @@ public class HotelView extends JFrame
          @Override 
          public void actionPerformed(ActionEvent arg0)
          { 
-            System.out.println("Confirmed cancelling reservation");
             ArrayList<Integer> numbers = 
                     hotel.getCurrentAccount().getReservationNumbers();
             for (int i = indexes.length - 1; i >= 0; i--)
             {
-               System.out.println("Index: " + i + "  Number: " + numbers.get(i) + "  Delete: " + indexes[i]);
                if (indexes[i])
                {
                   for (int j = 0; j < hotel.getRooms().size(); j++)
@@ -1261,7 +1245,6 @@ public class HotelView extends JFrame
          public void actionPerformed(ActionEvent arg0)
          { 
             //add our code to cancel reservation
-            System.out.println("No button clicked");
             hotel.confirmReservations();
             panelContainer.add(chooseReceiptCard(), "chooseReceiptCard");
             cards.show(panelContainer, "chooseReceiptCard");
@@ -1273,7 +1256,6 @@ public class HotelView extends JFrame
          public void actionPerformed(ActionEvent arg0)
          { 
             //add our code here to make a confirmation
-            System.out.println("Yes button clicked");
             panelContainer.add(makeReservationCard(), "makeReservationCard");
             cards.show(panelContainer, "makeReservationCard");
          } 
@@ -1301,7 +1283,6 @@ public class HotelView extends JFrame
          public void actionPerformed(ActionEvent arg0)
          { 
             //add our code to cancel reservation
-            System.out.println("Simple button clicked");
             hotel.createReceipt();
             panelContainer.add(receiptCard(), "receiptCard");
             cards.show(panelContainer, "receiptCard");
@@ -1313,7 +1294,6 @@ public class HotelView extends JFrame
          public void actionPerformed(ActionEvent arg0)
          { 
             //add our code here to make a confirmation
-            System.out.println("Comprehensive button clicked");
             hotel.createReceipt();
             hotel.setReceiptView(new ComprehensiveView());
             panelContainer.add(receiptCard(), "receiptCard");
@@ -1340,7 +1320,6 @@ public class HotelView extends JFrame
       {
          public void actionPerformed(ActionEvent e)
          {
-            System.out.println("Continue button pressed!");
             cards.show(panelContainer, "guestOptionsCard");
          }
       });
@@ -1401,19 +1380,15 @@ public class HotelView extends JFrame
             public void actionPerformed(ActionEvent e)
             {
                // Login Button Pushed. Check Password
-               System.out.println("Password: " + userPwdText.getText());
               if (hotel.login("manager", userPwdText.getText()))
               // if (userPwdText.getText().equals())
-               {
-                  System.out.println("Login successful");
-                     
+               {                     
                   // Show manager view card
                   userPwdText.setText(null);
                   cards.show(panelContainer, "managerViewCard");
                } 
                else 
                {
-                  System.out.println("Login failed");
                   userPwdText.setText(null);
                   messageLabel.setText("Login failed");
                }
@@ -1426,7 +1401,6 @@ public class HotelView extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)
             {
-               System.out.println("Cancel button Pushed!");
                cards.show(panelContainer, "loginCard");
             }
          });
@@ -1443,14 +1417,17 @@ public class HotelView extends JFrame
       JLabel ResRoomLabel = new JLabel("Reserved Rooms");
       JLabel emptyLabel = new JLabel("        ");
       JLabel blankLabel = new JLabel("");
-      JButton Quitbutton = new JButton("Quit");
+      JButton Quitbutton = new JButton("Save & Quit");
       JButton BackButton = new JButton("Go back");
 
-      JTextArea screen1 = new JTextArea(8,8);
-      JTextArea screen2 = new JTextArea(8,8);
+      managerReserved = new JTextArea(8,12);
+      managerAvailable = new JTextArea(8,8);
+      
+      JTextArea screen1 = managerAvailable;
+      JTextArea screen2 = managerReserved;
 
       JPanel CombinedPanel = new JPanel();
-      JPanel  GeneralPanel = new JPanel();
+      JPanel GeneralPanel = new JPanel();
       JPanel panel1 = new JPanel();
 
       panel1.setLayout(new BorderLayout());
@@ -1469,113 +1446,15 @@ public class HotelView extends JFrame
 
       ArrayList<Room> rooms = hotel.getRooms();
       ArrayList<String> roomList = new ArrayList<String>();
-      //Convert String to Date
-      String astring = cal.getDatePicked();
-      DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-      Date datePicked = null;
-      System.out.println("Test string");
-      try 
-      {
-         datePicked = df.parse(astring);
-         System.out.println("datePicked is: " + datePicked);			
-      } 
-      catch (Exception e1) 
-      {
-         System.out.println("bad converted date");
-         System.out.println(e1);
-         e1.printStackTrace();
-      }
-
-      /*
-      reserveRoom = null;
-      for (Room room: rooms)
-      {
-         boolean available = true;
-		
-         ArrayList<Integer> reservations = room.getReservations();
-         for (Integer reservationNumber: reservations)
-         {
-            // room reservation from reservation number
-            Reservation reservation = hotel.getReservation(reservationNumber);
-            // room reservation start and end date
-            Date startDate = reservation.getArrivalDate().getTime();
-            Date endDate = reservation.getDepartDate().getTime();
-         
       
-			// Check if the room is reserved or not
-            if (( DatePicked.after(startDate) &&
-                   DatePicked.before(endDate)))							
-            {
-               ArrayList<Reservation> reserved = new ArrayList<Reservation>();
-               for (int i = 0; i < reserved.size(); i++)
-               {
-                  Reservation r = reserved.get(i);
-                  String info = String.format("", r.getRoomNumber());
-                  screen2.append(info);
-               }
-            
-            }
-            else
-            {
-           	 for (Room room2: rooms)
-                {
-               // room available add room
-               reserveRoom = room2;
-               roomList.add("#" + String.valueOf(room2.getRoomNumber()) + "\n");
-               for(String list: roomList)
-               {
-                  screen1.append(list);
-               }
-                }
-            }
-         }
-      }*/
-
-      reserveRoom = null;
-            for (Room room: rooms)
-            {
-                boolean available = true;
-                
-                // correct type room?
-                 ArrayList<Integer> reservations = room.getReservations();
-                 for (Integer reservationNumber: reservations)
-                 {
-                     // room reservation from reservation number
-                     Reservation reservation = hotel.getReservation(reservationNumber);
-
-                     // room reservation start and end date
-                     Date startDate = reservation.getArrivalDate().getTime();
-                     Date endDate = reservation.getDepartDate().getTime();
-
-                     // Check can reserve this room?
-                     if (startDate.getTime() <= datePicked.getTime() &&
-                         endDate.getTime() <= datePicked.getTime())
-                     {
-                         // no reserve this room
-                         available = false;
-                         break;
-                     }
-                 }
-
-                 if (available == true)
-                 {
-                     // room available add room
-                     reserveRoom = room;
-                     screen1.append("   #" + String.valueOf(room.getRoomNumber()) + "\n");
-                 }
-                 else
-                 {
-                    reserveRoom = room;
-                    screen2.append("   #" + String.valueOf(room.getRoomNumber()) + "\n");
-                 }
-            }
-      
+      screen1.setText("");
+      screen2.setText("");
 
       Quitbutton.addActionListener(new ActionListener()
       {
          public void actionPerformed(ActionEvent e)
          {
-            System.out.println("Quit");
+            hotel.saveInfo();
             System.exit(0);
          }
       });
@@ -1584,7 +1463,6 @@ public class HotelView extends JFrame
       {
          public void actionPerformed(ActionEvent e)
          {
-            System.out.println("Back button");
             cards.show(panelContainer, "loginCard");
          }
       });
@@ -1602,9 +1480,30 @@ public class HotelView extends JFrame
       return CombinedPanel;
    }   
    
-   public void updateManagerView()
+   public void updateManagerView(Date date)
    {
-      panelContainer.add(managerViewCard(), "managerViewCard");
-      cards.show(panelContainer, "managerViewCard");
+      JTextArea screen1 = managerAvailable;
+      JTextArea screen2 = managerReserved;
+      screen1.setText("");
+      screen2.setText("");
+      
+      boolean[] available = hotel.checkAvailability(date, date);
+      ArrayList<Integer> indexes = hotel.getDatedReservations(date);
+      
+      for (int i = 0; i < available.length; i++)
+      {
+         if (available[i])
+         {
+            screen1.append("#" + hotel.getRooms().get(i).getRoomNumber() + "\n");
+         }
+      }
+      
+      for (int i: indexes)
+      {
+         Reservation r = hotel.getReservations().get(i);
+         screen2.append("#" + r.getRoomNumber() + " " + r.getGuestName() + " " +
+                 r.getCost() + "\n");
+      }
+
    }
 }

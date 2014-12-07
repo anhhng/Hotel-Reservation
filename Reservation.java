@@ -20,6 +20,7 @@ public class Reservation implements Serializable
    private GregorianCalendar endDate;
    private int reservationNumber;
    private int acctID;
+   private String guestName;
    private int roomNumber;
    private double cost;
    private double costPerDay;
@@ -34,9 +35,9 @@ public class Reservation implements Serializable
    @param aCostPerDay cost of room per night
    */
    public Reservation(GregorianCalendar start, GregorianCalendar end, 
-           int accountID, int room, double aCostPerDay)
+           int accountID, String guestName, int room, double aCostPerDay)
    {
-      initReservation(start, end, accountID, room, aCostPerDay, 
+      initReservation(start, end, accountID, guestName, room, aCostPerDay, 
               nextReservationNumber++);
    }
    
@@ -50,9 +51,9 @@ public class Reservation implements Serializable
    @param aReservationNumber reservation number
    */
    public Reservation(GregorianCalendar start, GregorianCalendar end, 
-           int accountID, int room, double aCostPerDay, int aReservationNumber)
+           int accountID, String guestName, int room, double aCostPerDay, int aReservationNumber)
    {
-      initReservation(start, end, accountID, room, aCostPerDay, 
+      initReservation(start, end, accountID, guestName, room, aCostPerDay, 
               aReservationNumber);
    }
    
@@ -67,12 +68,13 @@ public class Reservation implements Serializable
    postcondition: the new reservation has the given data
    */
    private void initReservation(GregorianCalendar start, GregorianCalendar end, 
-                           int accountID, int room, double aCostPerDay, 
-                           int aNumber)
+                           int accountID, String aGuestName, int room, 
+                           double aCostPerDay, int aNumber)
    {
       startDate = start;
       endDate = end;
       acctID = accountID;
+      guestName = aGuestName;
       roomNumber = room;
       reservationNumber = aNumber;
       costPerDay = aCostPerDay;
@@ -101,6 +103,15 @@ public class Reservation implements Serializable
    public int getAcctID()
    {
       return acctID;
+   }
+   
+   /**
+   Gets the name of the guest associated with the reservation
+   @return guest's name
+   */
+   public String getGuestName()
+   {
+      return guestName;
    }
 
    /**
