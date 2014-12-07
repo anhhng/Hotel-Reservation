@@ -17,8 +17,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 /**
- * Hotel , manager, data
- * @author Anh
+ * Hotel , manager, data. provide access to room, account, reservation records.
+ * @author Anhhong Nguyen
  *
  */
 public class Hotel implements Serializable
@@ -92,9 +92,9 @@ public class Hotel implements Serializable
 	}
 	/**
 	 * login checks username and password
-	 * @param accountName
-	 * @param aPassword
-	 * @return boolean
+	 * @param accountName the account ID
+	 * @param aPassword login password
+	 * @return boolean  false no account found
 	 */
 	public boolean login(String accountName, String aPassword)
 	{
@@ -128,12 +128,12 @@ public class Hotel implements Serializable
 	}
 	/**
 	 * makeReservation method makes reservations
-	 * @param start
-	 * @param end
-	 * @param accountID
-	 * @param guestName
-	 * @param room
-	 * @param aCostPerDay
+	 * @param start  reservation start date
+	 * @param end  reservation end date
+	 * @param accountID   account ID number
+	 * @param guestName  guest name
+	 * @param room  room number
+	 * @param aCostPerDay  cost per day
 	 */
 	public void makeReservation(GregorianCalendar start, GregorianCalendar end, 
 			int accountID, String guestName, int room, double aCostPerDay)
@@ -154,7 +154,7 @@ public class Hotel implements Serializable
 	}
 	/**
 	 * cancelReservation method cancels reseverations you chose
-	 * @param reservationNumber
+	 * @param reservationNumber reservation number
 	 */
 	public void cancelReservation(int reservationNumber)
 	{
@@ -165,11 +165,11 @@ public class Hotel implements Serializable
 			}
 	}
 	/**
-	 * createAccount mehthod creates a new account
-	 * @param isManager
-	 * @param name
-	 * @param username
-	 * @param aPassword
+	 * createAccount methhod creates a new account
+	 * @param isManager  manager account true=yes false=no
+	 * @param name account owner
+	 * @param username account login name
+	 * @param aPassword account password
 	 */
 	public void createAccount(boolean isManager, String name, String username, String aPassword)
 	{
@@ -178,7 +178,7 @@ public class Hotel implements Serializable
 	/**
 	 * deleteAccount method deleted Manager account if 
 	 * you make a new one
-	 * @param username
+	 * @param username  user name
 	 */
 	public void deleteAccount(String username)
 	{
@@ -277,7 +277,7 @@ public class Hotel implements Serializable
 	}
 	/**
 	 * getReservation gets reservations
-	 * @param aReservation
+	 * @param aReservation get reservation record
 	 * @return
 	 */
 	public Reservation getReservation(Integer aReservation)
@@ -292,7 +292,7 @@ public class Hotel implements Serializable
 	}
 	/**
 	 * addReservation adds reservations
-	 * @param aReservation
+	 * @param aReservation  add reservation record
 	 */
 	public void addReservation(Reservation aReservation)
 	{
@@ -308,8 +308,8 @@ public class Hotel implements Serializable
 	/**
 	 * CheckAvailability check whether the room is available 
 	 * by checking on dates (ManagerView)
-	 * @param date
-	 * @return boolean
+	 * @param date date
+	 * @return boolean array of rooms available
 	 */
 	public boolean[] checkAvailability(Date date)
 	{
@@ -340,9 +340,9 @@ public class Hotel implements Serializable
 	/**
 	 * checkAvailability check whether the room is available or not
 	 * by checking dates (guest only)
-	 * @param start
-	 * @param end
-	 * @return boolean
+	 * @param start start date
+	 * @param end end date
+	 * @return boolean array of rooms available
 	 */
 	public boolean[] checkAvailability(Date start, Date end)
 	{
