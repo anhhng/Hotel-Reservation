@@ -8,65 +8,56 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Locale;
-
-import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
-import javax.swing.SpinnerListModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
+/**
+ * CalendarGUI displays Calendar.Manager can click on the day to change 
+ * the view of available rooms or reserved rooms
+ * @author Team ADD
+ *
+ */
 public class CalendarGUI extends JPanel
 {
-   private HotelView view;
-	/** The currently-interesting year (not modulo 1900!) */
-	protected int yy;
+	private HotelView view;
+	/** The current year, month, and day*/
+	protected int yy, mm, dd;;
 
-	/** Currently-interesting month and day */
-	protected int mm, dd;
-
-	/** The buttons to be displayed */
+	/** The label to be displayed */
 	protected JLabel labs[][];
 
 	/** The number of day squares to leave blank at the start of this month */
 	protected int leadGap = 0;
 
-	/** A Calendar object used throughout */
+	/** A Calendar object */
 	Calendar calendar = new GregorianCalendar();
 
-	/** Today's year */
+	/** current year */
 	protected final int thisYear = calendar.get(Calendar.YEAR);
 	protected final int thisDay = calendar.get(Calendar.DATE);
 
-
-	/** Today's month */
+	/** current month */
 	protected final int thisMonth = calendar.get(Calendar.MONTH);
 	/** picked date from calendar */
 	private String datepicked;
 
-	/** One of the buttons. We just keep its reference for getBackground(). */
+	/** One of the label */
 	private JLabel b0;
 
-	/** The month choice */
+	/** The month choice by JCombobox */
 	private JComboBox monthChoice;
 
-	/** The year choice */
-	//private JComboBox yearChoice;
+	/** The year choice by JSpinner */
 	private JSpinner yearChoice;
 	/**
-	 * Construct a Cal, starting with today.
+	 * Construct Calendar, starting with today.
 	 */
 	CalendarGUI(HotelView aView)
 	{
@@ -74,13 +65,14 @@ public class CalendarGUI extends JPanel
 		setYYMMDD(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
 				calendar.get(Calendar.DAY_OF_MONTH));
 		buildGUI();
-		//recompute();
+		//display calendar
 		printCalendarMonthYear();
-                view = aView;
+		view = aView;
 
 	}
-
-
+	/*
+	 * set Current Date
+	 */
 	private void setYYMMDD(int year, int month, int today)
 	{
 		yy = year;
@@ -88,31 +80,35 @@ public class CalendarGUI extends JPanel
 		dd = today;
 	}
 
+	//String Array for month and year
 	String[] months = { "January", "February", "March", "April", "May", "June",
 			"July", "August", "September", "October", "November", "December" };
 	String[] years = {"2005", "2006", "2007", "2008", "2009", "2010", "2014", "2015", "2016", "2018"};
 
-
-
-	/** Build the GUI. Assumes that setYYMMDD has been called. */
+	/*
+	 * BuildGUI
+	 */
 	private void buildGUI()
 	{
-		
-
 		setLayout(new BorderLayout());
 
 		JPanel tp = new JPanel();
 		tp.add(monthChoice = new JComboBox());
 		for (int i = 0; i < months.length; i++)
+			//add months to JComboBox
 			monthChoice.addItem(months[i]);
 		monthChoice.setSelectedItem(months[mm]);
+		//month choice listener 
 		monthChoice.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
 				int i = monthChoice.getSelectedIndex();
-				if (i >= 0) {
+				if (i >= 0) 
+				{
+					//set choice to mm
 					mm = i;
+					//update calendar
 					printCalendarMonthYear() ;
 				}
 			}
@@ -121,8 +117,9 @@ public class CalendarGUI extends JPanel
 
 		SpinnerDateModel model = new SpinnerDateModel(new Date(), null, null,
 				Calendar.DAY_OF_YEAR);
+		//create JSpinner object
 		final JSpinner spinner = new JSpinner(model);
-		//yearChoice.setEditable(true);
+		//add spninner to tp panel
 		tp.add(spinner);
 		String format = "yyyy";
 		JSpinner.DateEditor editor = new JSpinner.DateEditor(spinner, format);
@@ -138,19 +135,20 @@ public class CalendarGUI extends JPanel
 				//set date we chose to Calendar
 				calendar.setTime(date);
 				int YearIndex = calendar.get(Calendar.YEAR);
-				// set year 
+				// set year choice to yy
 				yy= YearIndex;
-
+				//update calendar
 				printCalendarMonthYear();
 			}
 		});
-
+		//JComboBox and JSpinner will be on the North
 		add(tp, BorderLayout.NORTH);
-		
+
 		JPanel bp = new JPanel();
 		bp.setLayout(new GridLayout(7, 7));
-		labs = new JLabel[6][7]; // first row is days
-
+		//maximum 6 rows and 7 colums
+		labs = new JLabel[6][7];
+		//Create day label and set color
 		bp.add(b0 = new JLabel("SUN"));
 		b0.setForeground(Color.white);
 		JLabel MON = new JLabel("MON");
@@ -191,74 +189,83 @@ public class CalendarGUI extends JPanel
 		for (int i = 0; i < 6; i++)
 			for (int j = 0; j < 7; j++)
 			{
-                          bp.add(labs[i][j] = new JLabel(""));
-                          final int col = i;
-                          final int row = j;
-                          datepicked = calendar.get(Calendar.MONTH)+1 +"/" + calendar.get(Calendar.DAY_OF_MONTH)+
-                                          "/"+ calendar.get(Calendar.YEAR);
-                          labs[i][j].addMouseListener(new MouseAdapter()
-                          {
+				bp.add(labs[i][j] = new JLabel(""));
+				final int col = i;
+				final int row = j;
+				//make day label is clickable
+				labs[i][j].addMouseListener(new MouseAdapter()
+				{
 
-                            public void mouseClicked(MouseEvent e)
-                            {
-                                    String picked = labs[col][row].getText();
-                                    datepicked = Integer.toString(mm+1) + "/" + picked+ "/"+ Integer.toString(yy);
-                                    int month;
-                                    int day;
-                                    int year;
-                                    if (datepicked.charAt(1) == '/')
-                                    {
-                                       month = Integer.parseInt(datepicked.substring(0,1));
-                                       if (datepicked.charAt(3) == '/')
-                                       {
-                                          day = Integer.parseInt(datepicked.substring(2,3));
-                                          year = Integer.parseInt(datepicked.substring(4,8));
-                                       }
-                                       else
-                                       {
-                                          day = Integer.parseInt(datepicked.substring(2,4));
-                                          year = Integer.parseInt(datepicked.substring(5,9));
-                                       }
-                                    }
-                                    else
-                                    {
-                                       month = Integer.parseInt(datepicked.substring(0,2));
-                                       if (datepicked.charAt(4) == '/')
-                                       {
-                                          day = Integer.parseInt(datepicked.substring(3,4));
-                                          year = Integer.parseInt(datepicked.substring(5,9));
-                                       }
-                                       else
-                                       {
-                                          day = Integer.parseInt(datepicked.substring(3,5));
-                                          year = Integer.parseInt(datepicked.substring(6,10));
-                                       }
-                                    }
-                                    Calendar tempCal = Calendar.getInstance();
-                                    tempCal.set(Calendar.YEAR, year);
-                                    tempCal.set(Calendar.MONTH, month - 1);
-                                    tempCal.set(Calendar.DATE, day);
-                                    Date date = tempCal.getTime();
-                                    view.updateManagerView(date);
-                            }
-                          });
+					public void mouseClicked(MouseEvent e)
+					{
+						String picked = labs[col][row].getText();
+						//get the day picked as a String
+						datepicked = Integer.toString(mm+1) + "/" + picked+ "/"+ Integer.toString(yy);
+						int month;
+						int day;
+						int year;
+						//check if datepicked is format MM//dd/yyyy or not
+						if (datepicked.charAt(1) == '/')
+						{
+							month = Integer.parseInt(datepicked.substring(0,1));
+							if (datepicked.charAt(3) == '/')
+							{
+								day = Integer.parseInt(datepicked.substring(2,3));
+								year = Integer.parseInt(datepicked.substring(4,8));
+							}
+							else
+							{
+								day = Integer.parseInt(datepicked.substring(2,4));
+								year = Integer.parseInt(datepicked.substring(5,9));
+							}
+						}
+						else
+						{
+							month = Integer.parseInt(datepicked.substring(0,2));
+							if (datepicked.charAt(4) == '/')
+							{
+								day = Integer.parseInt(datepicked.substring(3,4));
+								year = Integer.parseInt(datepicked.substring(5,9));
+							}
+							else
+							{
+								day = Integer.parseInt(datepicked.substring(3,5));
+								year = Integer.parseInt(datepicked.substring(6,10));
+							}
+						}
+						//get current date as Date type
+						//and pass it to updateManagerView method
+						Calendar tempCal = Calendar.getInstance();
+						tempCal.set(Calendar.YEAR, year);
+						tempCal.set(Calendar.MONTH, month - 1);
+						tempCal.set(Calendar.DATE, day);
+						Date date = tempCal.getTime();
+						view.updateManagerView(date);
+					}
+				});
 
 			}
-		JLabel blankLabel = new JLabel("");
-		add(blankLabel, BorderLayout.SOUTH);
 		add(bp, BorderLayout.CENTER);
 	}
 
-
 	private int activeDay = -1;
+	/**
+	 * check if it is a leap year
+	 * @param year
+	 * @return Boolean
+	 */
 	public boolean isLeap(int year)
 	{
 		if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0)
 			return true;
 		return false;
 	}
+	/**
+	 * show Calendar
+	 */
 	public void printCalendarMonthYear()
 	{
+		//number of days for each months
 		int dom[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 		clearDayActive();
 		int currentMonth = mm;
@@ -280,8 +287,6 @@ public class CalendarGUI extends JPanel
 		// day of the month and the number of days in month:
 		printCalendar(numberOfMonthDays, firstWeekdayOfMonth);
 	}
-
-
 	/*
 	 * 	prints calendar month based on the weekday of the first
 	 *  day of the month and the number of days in month:
@@ -295,7 +300,7 @@ public class CalendarGUI extends JPanel
 			labs[0][day].setText("");
 		}
 		// display the days of month
-                labs[0][0].setText("");
+		labs[0][0].setText("");
 		for (int day = 1; day <= numberOfMonthDays; day++)
 		{
 			int column = (firstWeekdayOfMonth + day -1)/7;
@@ -322,6 +327,7 @@ public class CalendarGUI extends JPanel
 			setDayActive(dd,firstWeekdayOfMonth);		
 		}
 	}
+	//set color for current day.
 	public void setDayActive(int newDay, int firstWeekdayOfMonth)
 	{
 		clearDayActive();
@@ -337,7 +343,9 @@ public class CalendarGUI extends JPanel
 
 		activeDay = newDay;
 	}
-	/** Unset any previously highlighted day */
+	/**No color for any previously highlighted day
+	 * 
+	 */
 	private void clearDayActive()
 	{
 		JLabel b;
