@@ -628,7 +628,9 @@ public class HotelView extends JFrame
                     {
                         // room reservation from reservation number
                         Reservation reservation = hotel.getReservation(reservationNumber);
-                        
+                        if (reservation == null)
+                             break;
+
                         // room reservation start and end date
                         Date startDate = reservation.getArrivalDate().getTime();
                         Date endDate = reservation.getDepartDate().getTime();
@@ -756,7 +758,8 @@ public class HotelView extends JFrame
            this.view.addTransactionDoneListener(new ActionListener () {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    panelContainer.add(chooseReceiptCard(),"chooseReceiptCard");
+                     hotel.confirmReservations();
+                     panelContainer.add(chooseReceiptCard(),"chooseReceiptCard");                
                     cards.show(panelContainer,"chooseReceiptCard");
                 }}
            );
@@ -1431,10 +1434,10 @@ public class HotelView extends JFrame
       return panel;
    }
    
-   public JPanel managerViewCard() 
+   private JPanel managerViewCard() 
    {
       Room reserveRoom;
-      CalendarGUI cal = new CalendarGUI(this);
+      CalendarGUI cal = new CalendarGUI();
 
       JLabel AvaRoomLabel = new JLabel("Available Rooms");
       JLabel ResRoomLabel = new JLabel("Reserved Rooms");
@@ -1469,21 +1472,17 @@ public class HotelView extends JFrame
       //Convert String to Date
       String astring = cal.getDatePicked();
       DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-      Date datePicked = null;
-      System.out.println("Test string");
+      Date DatePicked = null;
       try 
       {
-         datePicked = df.parse(astring);
-         System.out.println("datePicked is: " + datePicked);			
+         DatePicked = df.parse(astring);
+			
       } 
-      catch (Exception e1) 
+      catch (ParseException e1) 
       {
          System.out.println("bad converted date");
-         System.out.println(e1);
          e1.printStackTrace();
       }
-
-      /*
       reserveRoom = null;
       for (Room room: rooms)
       {
@@ -1498,11 +1497,10 @@ public class HotelView extends JFrame
             // room reservation start and end date
             Date startDate = reservation.getArrivalDate().getTime();
             Date endDate = reservation.getDepartDate().getTime();
-         
-      
-			// Check if the room is reserved or not
-            if (( DatePicked.after(startDate) &&
-                   DatePicked.before(endDate)))							
+
+            // Check if the room is reserved or not
+            if ((ReservationStartDate.getTime() <= DatePicked.getTime() &&
+                     ReservationEndDate.getTime() >= DatePicked.getTime()))							
             {
                ArrayList<Reservation> reserved = new ArrayList<Reservation>();
 
@@ -1512,63 +1510,23 @@ public class HotelView extends JFrame
                   String info = String.format("", r.getRoomNumber());
                   screen2.append(info);
                }
-            
-            }
-            else
-            {
-           	 for (Room room2: rooms)
-                {
-               // room available add room
-               reserveRoom = room2;
-               roomList.add("#" + String.valueOf(room2.getRoomNumber()) + "\n");
-               for(String list: roomList)
-               {
-                  screen1.append(list);
-               }
-                }
+               // no available
+               available = false;
+               break;
             }
          }
-      }*/
 
-      reserveRoom = null;
-            for (Room room: rooms)
+         if (available == true)
+         {
+            // room available add room
+            reserveRoom = room;
+            roomList.add("   #" + String.valueOf(room.getRoomNumber()) + "\n");
+            for(String list: roomList)
             {
-                boolean available = true;
-                
-                // correct type room?
-                 ArrayList<Integer> reservations = room.getReservations();
-                 for (Integer reservationNumber: reservations)
-                 {
-                     // room reservation from reservation number
-                     Reservation reservation = hotel.getReservation(reservationNumber);
-
-                     // room reservation start and end date
-                     Date startDate = reservation.getArrivalDate().getTime();
-                     Date endDate = reservation.getDepartDate().getTime();
-
-                     // Check can reserve this room?
-                     if (startDate.getTime() <= datePicked.getTime() &&
-                         endDate.getTime() <= datePicked.getTime())
-                     {
-                         // no reserve this room
-                         available = false;
-                         break;
-                     }
-                 }
-
-                 if (available == true)
-                 {
-                     // room available add room
-                     reserveRoom = room;
-                     screen1.append("   #" + String.valueOf(room.getRoomNumber()) + "\n");
-                 }
-                 else
-                 {
-                    reserveRoom = room;
-                    screen2.append("   #" + String.valueOf(room.getRoomNumber()) + "\n");
-                 }
+               screen1.append(list);
             }
-      
+         }
+      }
 
       Quitbutton.addActionListener(new ActionListener()
       {
@@ -1600,10 +1558,4 @@ public class HotelView extends JFrame
       this.setSize(new Dimension(WIDTH, HEIGHT));
       return CombinedPanel;
    }   
-   
-   public void updateManagerView()
-   {
-      panelContainer.add(managerViewCard(), "managerViewCard");
-      cards.show(panelContainer, "managerViewCard");
-   }
 }
