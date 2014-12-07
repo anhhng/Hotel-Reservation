@@ -149,19 +149,19 @@ public class CalendarGUI extends JPanel
 		//maximum 6 rows and 7 colums
 		labs = new JLabel[6][7];
 		//Create day label and set color
-		bp.add(b0 = new JLabel("SUN"));
+		bp.add(b0 = new JLabel("S"));
 		b0.setForeground(Color.white);
-		JLabel MON = new JLabel("MON");
+		JLabel MON = new JLabel("M");
 		MON.setForeground(Color.white);
-		JLabel TUE = new JLabel("TUE");
+		JLabel TUE = new JLabel("T");
 		TUE.setForeground(Color.white);
-		JLabel WED = new JLabel("WED");
+		JLabel WED = new JLabel("W");
 		WED.setForeground(Color.white);
-		JLabel THU = new JLabel("THU");
+		JLabel THU = new JLabel("T");
 		THU.setForeground(Color.white);
-		JLabel FRI = new JLabel(" FRI");
+		JLabel FRI = new JLabel(" F");
 		FRI.setForeground(Color.white);
-		JLabel SAT = new JLabel("SAT");
+		JLabel SAT = new JLabel("S");
 		SAT.setForeground(Color.white);
 
 		b0.setBackground(Color.blue);

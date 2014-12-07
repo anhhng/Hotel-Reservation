@@ -1380,7 +1380,7 @@ public class HotelView extends JFrame
       JButton Quitbutton = new JButton("Save & Quit");
       JButton BackButton = new JButton("Go back");
 
-      managerReserved = new JTextArea(8,12);
+      managerReserved = new JTextArea(8,16);
       managerAvailable = new JTextArea(8,8);
       
       JTextArea screen1 = managerAvailable;
@@ -1466,7 +1466,7 @@ public class HotelView extends JFrame
       for (int i: indexes)
       {
          Reservation r = hotel.getReservations().get(i);
-         screen2.append("#" + r.getRoomNumber() + " " + r.getGuestName() + " " +
+         screen2.append("#" + r.getRoomNumber() + "  " + r.getGuestName() + "  $" +
                  r.getCost() + "\n");
       }
 
