@@ -114,11 +114,9 @@ public class Hotel implements Serializable
    
    public void cancelReservation(int reservationNumber)
    {
-      System.out.println(reservations);
       for (int i = reservations.size() - 1; i >= 0; i--)
          if (reservations.get(i).getReservationNumber() == reservationNumber)
          {
-            System.out.println(reservations.get(i));
             reservations.remove(i);
          }
    }
@@ -231,6 +229,32 @@ public class Hotel implements Serializable
       currentReservations = new ArrayList<Reservation>();
    }
    
+   public boolean[] checkAvailability(Date date)
+   {
+      boolean[] roomsAvailable = new boolean[rooms.size()];
+      for (int i = 0; i < roomsAvailable.length; i++)
+      {
+         roomsAvailable[i] = true;
+      }
+      
+      for (Reservation r: reservations)
+      {
+         if (date.after(r.getArrivalDate().getTime()) && 
+                 date.before(r.getDepartDate().getTime()))
+         {
+            for (int i = 0; i < rooms.size(); i++)
+            {
+               if (r.getRoomNumber() == rooms.get(i).getRoomNumber())
+               {
+                  roomsAvailable[i] = false;  
+               }
+            }
+         }
+      }
+      
+      return roomsAvailable;
+   }
+   
    public boolean[] checkAvailability(Date start, Date end)
    {
       boolean[] roomsAvailable = new boolean[rooms.size()];
@@ -241,11 +265,32 @@ public class Hotel implements Serializable
       
       for (Reservation r: reservations)
       {
-
-         if (start.after(r.getArrivalDate().getTime()) && 
-                 end.before(r.getDepartDate().getTime()))
+         if ((start.after(r.getArrivalDate().getTime()) && 
+                 start.before(r.getDepartDate().getTime())) || 
+                 (end.after(r.getArrivalDate().getTime()) && 
+                 end.before(r.getDepartDate().getTime())) ||
+                 (start.before(r.getArrivalDate().getTime()) &&
+                 end.after(r.getDepartDate().getTime())))
          {
-            System.out.println("fits");
+            for (int i = 0; i < rooms.size(); i++)
+            {
+               if (r.getRoomNumber() == rooms.get(i).getRoomNumber())
+               {
+                  roomsAvailable[i] = false;  
+               }
+            }
+         }
+      }
+      
+      for (Reservation r: currentReservations)
+      {
+         if ((start.after(r.getArrivalDate().getTime()) && 
+                 start.before(r.getDepartDate().getTime())) || 
+                 (end.after(r.getArrivalDate().getTime()) && 
+                 end.before(r.getDepartDate().getTime())) ||
+                 (start.before(r.getArrivalDate().getTime()) &&
+                 end.after(r.getDepartDate().getTime())))
+         {
             for (int i = 0; i < rooms.size(); i++)
             {
                if (r.getRoomNumber() == rooms.get(i).getRoomNumber())

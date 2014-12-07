@@ -609,55 +609,14 @@ public class HotelView extends JFrame
             reserveRoom = null;
             boolean[] available = hotel.checkAvailability(ReservationStartDate, 
                     ReservationEndDate);
-            System.out.println(ReservationStartDate);
-            System.out.println(ReservationEndDate);
             for (int i = 0; i < available.length; i++)
             {
-               System.out.println(i + ": " + available[i]);
                if (available[i] && rooms.get(i).isLuxury() == luxury)
                {
                   roomList.add("#" + rooms.get(i).getRoomNumber() + "\n");
                   reserveRoom = rooms.get(i);
                }
             }
-            /*for (Room room: rooms)
-            {
-                boolean available = true;
-                
-                // correct type room?
-                if (room.isLuxury() == luxury) {
-                    ArrayList<Integer> reservations = room.getReservations();
-                    for (Integer reservationNumber: reservations)
-                    {
-                        // room reservation from reservation number
-                        Reservation reservation = hotel.getReservation(reservationNumber);
-			if (reservation == null)
-                            break;
-                        
-                        // room reservation start and end date
-                        Date startDate = reservation.getArrivalDate().getTime();
-                        Date endDate = reservation.getDepartDate().getTime();
-                        
-                        // Check can reserve this room?
-                        if ((ReservationStartDate.getTime() >= startDate.getTime() &&
-                             ReservationStartDate.getTime() < endDate.getTime()) || 
-                            (ReservationEndDate.getTime() > startDate.getTime() &&
-                             ReservationEndDate.getTime() <= endDate.getTime()))
-                        {
-                            // no reserve this room
-                            available = false;
-                            break;
-                        }
-                    }
-                    
-                    if (available == true)
-                    {
-                        // room available add room
-                        reserveRoom = room;
-                        roomList.add("   #" + String.valueOf(room.getRoomNumber()) + "\n");
-                    }
-                }
-            }*/
             
             NoConfirmation = false;
             
@@ -1117,7 +1076,6 @@ public class HotelView extends JFrame
          @Override 
          public void actionPerformed(ActionEvent arg0)
          { 
-            //add our code to cancel reservation
             panelContainer.add(showReservationsCard(), "showReservationsCard");
             cards.show(panelContainer, "showReservationsCard");
          } 
@@ -1401,6 +1359,7 @@ public class HotelView extends JFrame
                {                     
                   // Show manager view card
                   userPwdText.setText(null);
+                  panelContainer.add(managerViewCard(), "managerViewCard");
                   cards.show(panelContainer, "managerViewCard");
                } 
                else 
@@ -1503,7 +1462,7 @@ public class HotelView extends JFrame
       screen1.setText("");
       screen2.setText("");
       
-      boolean[] available = hotel.checkAvailability(date, date);
+      boolean[] available = hotel.checkAvailability(date);
       ArrayList<Integer> indexes = hotel.getDatedReservations(date);
       
       for (int i = 0; i < available.length; i++)
